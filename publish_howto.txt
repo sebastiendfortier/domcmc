@@ -1,0 +1,42 @@
+
+Notes for me to remember steps involved in publishing this package
+
+- adjust version number in 'setup.py'
+- adjust version number in 'docs/conf.py'
+
+- make bundle by running:
+    - You probably want to cleanup
+    python setup.py clean --all
+    rm -rf dist
+python setup.py sdist bdist_wheel
+
+- upload to TEST pypi
+tine upload --repository-url https://test.pypi.org/legacy/ dist/*
+
+- upload to official pypi repo
+twine upload dist/*
+
+For CONDA package
+
+- from a DIFFERENT    directory  and conda environment
+conda install anaconda-client conda-build
+conda skeleton pypi domcmc
+conda build domcmc
+
+- Can test local build with:
+conda install -c file:///home/ords/mrd/rpndat/dja001/python_miniconda3/envs/test1/conda-bld/ domcmc --override-channels
+
+- Add to local conda channel:
+
+add the bz2 file to:
+/home/dja001/shared_stuff/conda_channel/linux-64/
+Go in 
+/home/dja001/shared_stuff/
+and run:
+conda index conda_channel/
+
+
+- test the conda package in a frest conda environment with:
+conda install domcmc -c /home/dja001/shared_stuff/conda_channel --override-channels
+
+
