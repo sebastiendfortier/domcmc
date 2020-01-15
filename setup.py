@@ -9,7 +9,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='domcmc',
-    version='1.0.0',
+    version='1.0.2',
     url='https://gitlab.science.gc.ca/dja001/domcmc',
     license='GPL-3.0-or-later',
     author='Dominik Jacques',
