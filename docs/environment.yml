@@ -6,3 +6,4 @@ dependencies:
       - numpy
       - scipy
       - conda-forge::sphinx-autodoc-typehints 
+      - conda-forge::sphinx-rtd-theme

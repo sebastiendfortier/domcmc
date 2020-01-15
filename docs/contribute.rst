@@ -32,7 +32,8 @@ From the gitlab web interface, you should then:
            cd domcmc
 
    #. Create a clean `Anaconda <https://wiki.cmc.ec.gc.ca/wiki/Anaconda>`_ developmemt environment 
-      and activate it:
+      and activate it. 
+      You need internet access for this. 
         .. code-block:: bash
 
            conda env create --name domcmc_dev_env -f docs/environment.yml
