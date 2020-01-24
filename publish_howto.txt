@@ -1,8 +1,12 @@
 
 Notes for me to remember steps involved in publishing this package
 
-- adjust version number in 'setup.py'
-- adjust version number in 'docs/conf.py'
+- On a separate issue branch
+    make changes
+    run tests
+    make new documentation page
+
+- adjust version number in VERSION
 
 - make bundle by running:
     - You probably want to cleanup
@@ -18,13 +22,14 @@ twine upload dist/*
 
 For CONDA package
 
-- from a DIFFERENT    directory  and conda environment
-conda install anaconda-client conda-build
+- from a DIFFERENT directory 
+    To load in environment if not already done:
+    conda install anaconda-client conda-build
 conda skeleton pypi domcmc
 conda build domcmc
 
-- Can test local build with:
-conda install -c file:///home/ords/mrd/rpndat/dja001/python_miniconda3/envs/test1/conda-bld/ domcmc --override-channels
+    - Can test local build with:
+    conda install -c file:///home/ords/mrd/rpndat/dja001/python_miniconda3/envs/test1/conda-bld/ domcmc --override-channels
 
 - Add to local conda channel:
 
@@ -38,5 +43,10 @@ conda index conda_channel/
 
 - test the conda package in a frest conda environment with:
 conda install domcmc -c /home/dja001/shared_stuff/conda_channel --override-channels
+or
+conda update domcmc -c /home/dja001/shared_stuff/conda_channel --override-channels
+
+- push the docs
+rsync -auv --delete docs/_build/html/ /home/dja001/public_html/domcmc/
 
 

@@ -22,7 +22,9 @@ copyright = '2019, Dominik Jacques'
 author = 'Dominik Jacques'
 
 # The full version, including alpha/beta/rc tags
-release = '1.0.2'
+with open('../VERSION', encoding='utf-8') as f:
+    version = f.read()
+release = version
 
 
 # -- General configuration ---------------------------------------------------
