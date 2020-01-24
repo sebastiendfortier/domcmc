@@ -1,34 +1,32 @@
 """
 A module for quickly reading data from files in the in CMC "standard" format.
-Basically everything is done through the **getData** function.
+Basically everything is done through the **get_data** function.
 
 
 
 """
 
-
 from typing import Callable, Iterator, Union, Optional, List, Iterable, MutableMapping
-import datetime as DT
+import datetime
 
-
-def getData( fileName:   Optional[str]=None,
-             dirName:    Optional[str]=None,
-             prefix:     Optional[str]='',
-             suffix:     Optional[str]='',
-             varName:    str=None, 
-             datev:      Optional[Union[int,DT.datetime]]=None,
-             ip1:        Optional[Union[List[int],int]]=None,
-             ip2:        Optional[int]=None,
-             ip3:        Optional[int]=None,
-             ig1:        Optional[int]=None,
-             ig2:        Optional[int]=None,
-             ig3:        Optional[int]=None,
-             typvar:     Optional[str]=None, 
-             etiquette:  Optional[str]=None,
-             latlon:     Optional[bool]=False,
-             presFromVar:Optional[bool]=False,
-             presLevels: Optional[Iterable[int]]=None,
-             tmpDir:     Optional[str]=None) :
+def get_data(file_name:     Optional[str]=None,
+             dir_name:      Optional[str]=None,
+             prefix:        Optional[str]='',
+             suffix:        Optional[str]='',
+             var_name:      str=None,
+             datev:         Optional[Union[int,datetime.datetime]]=None,
+             ip1:           Optional[Union[List[int],int]]=None,
+             ip2:           Optional[int]=None,
+             ip3:           Optional[int]=None,
+             ig1:           Optional[int]=None,
+             ig2:           Optional[int]=None,
+             ig3:           Optional[int]=None,
+             typvar:        Optional[str]=None,
+             etiquette:     Optional[str]=None,
+             latlon:        Optional[bool]=False,
+             pres_from_var: Optional[bool]=False,
+             pres_levels:   Optional[Iterable[int]]=None,
+             tmp_dir:       Optional[str]=None) :
 
 
     """ Read data from CMC 'standard' files 
@@ -40,36 +38,36 @@ def getData( fileName:   Optional[str]=None,
        - Option to search valid entry in all standard files located within a directory 
 
     Args:
-       fileName:    /path/to/fst/file.fst  
-       dirName:     /path/to/a/directory/containing/fst/files/   
-                    Search all standard files within a directory for a match 
-                    with search criteria. 
-                    Searching all files in large directories can take a while, 
-                    use prefix and suffix to constrain search.
-                    Note that fileName superseeds dirName
-       prefix:      In combination with dirName; prefix of files to search
-       suffix:      In combination with dirName; suffix of files to search
-       varName:     Name of variable to read in fst file  eg:   UU, VV, TT, MPQC, etc.
-       presFromVar: Flag to output pressure associated with returned data
-       datev:       Cmc timestamp for validity date of retrieved data
-       ip1:         Criterion for choosing what data will be read.
-                    A list of ip1s can be provided to read a number of levels 
-                    in one function call. 
-       ip2:         Criterion for choosing what data will be read
-       ip3:         Criterion for choosing what data will be read
-       ig1:         Criterion for choosing what data will be read
-       ig2:         Criterion for choosing what data will be read
-       ig3:         Criterion for choosing what data will be read
-       typvar:      Criterion for choosing what data will be read
-       etiquette:   Criterion for choosing what data will be read
-       latlon:      Flag to output 2D grids of latitude and longitudes associated with data
-       presLevels:  List of pressure levels [hPa] onto which data is desired   eg [850,700,500]
-       tmpDir:      /path/to/a/temporary/work/directory/   Only used for interpolation to pressure levels 
-                    if None, $TMPDIR is used; may run out of space when large fields are interpolated
+       file_name:     /path/to/fst/file.fst
+       dir_name:      /path/to/a/directory/containing/fst/files/
+                      Search all standard files within a directory for a match
+                      with search criteria.
+                      Searching all files in large directories can take a while,
+                      use prefix and suffix to constrain search.
+                      Note that file_name superseeds dir_name
+       prefix:        In combination with dir_name; prefix of files to search
+       suffix:        In combination with dir_name; suffix of files to search
+       var_name:      Name of variable to read in fst file  eg:   UU, VV, TT, MPQC, etc.
+       pres_from_var: Flag to output pressure associated with returned data
+       datev:         Cmc timestamp for validity date of retrieved data
+       ip1:           Criterion for choosing what data will be read.
+                      A list of ip1s can be provided to read a number of levels
+                      in one function call.
+       ip2:           Criterion for choosing what data will be read
+       ip3:           Criterion for choosing what data will be read
+       ig1:           Criterion for choosing what data will be read
+       ig2:           Criterion for choosing what data will be read
+       ig3:           Criterion for choosing what data will be read
+       typvar:        Criterion for choosing what data will be read
+       etiquette:     Criterion for choosing what data will be read
+       latlon:        Flag to output 2D grids of latitude and longitudes associated with data
+       pres_levels:   List of pressure levels [hPa] onto which data is desired   eg [850,700,500]
+       tmp_dir:       /path/to/a/temporary/work/directory/   Only used for interpolation to pressure levels
+                      if None, $TMPDIR is used; may run out of space when large fields are interpolated
 
     Returns:
         {
-            'values':    (ndarray) 2D or 3D array containing data  k=0 -> lowest level
+            'values':   (ndarray) 2D or 3D array containing data  k=0 -> lowest level
 
             'meta':     (dict) meta data of the first matching entry in fst file
 
@@ -77,15 +75,15 @@ def getData( fileName:   Optional[str]=None,
 
             'toctoc':   (dict) toctoc (!!) entry associated with data as returned by fstlir of rpn python
 
-            'ip1List':  (list) ip1s for each level being returned
+            'ip1_list': (list) ip1s for each level being returned
 
-            'levList':  (list) levels corresponding to the ip1s in ip1List
+            'lev_list': (list) levels corresponding to the ip1s in ip1_list
 
             'lat':      (ndarray) 2D latitudes of data grid (conditional on latlon=True)
 
             'lon':      (ndarray) 2D longitudes of data grid (conditional on latlon=True)
 
-            'pressure': (ndarray) 2D or 3D array of pressure (conditional on presLevels)
+            'pressure': (ndarray) 2D or 3D array of pressure (conditional on pres_levels)
 
         }
 
@@ -95,10 +93,10 @@ def getData( fileName:   Optional[str]=None,
        Get first matching entry of P0 as a 2D ndarray. 
 
        >>> import domcmc.fst_tools as fst_tools
-       >>> fstFile = '/home/dja001/shared_stuff/files/python_test_data/2016081200_006_0001'
-       >>> p0 = fst_tools.getData(fileName=fstFile, varName='P0')
+       >>> fst_file = '/home/dja001/shared_stuff/files/python_test_data/2016081200_006_0001'
+       >>> p0 = fst_tools.get_data(file_name=fst_file, var_name='P0')
        >>> print(p0.keys())
-       dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1List', 'levList'])
+       dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1_list', 'lev_list'])
        >>> print(p0['values'].shape)
        (328, 278)
 
@@ -106,21 +104,21 @@ def getData( fileName:   Optional[str]=None,
        Get P0 at a different validity date:
 
        >>> import domcmc.fst_tools as fst_tools
-       >>> import datetime as DT
-       >>> fstFile = '/home/dja001/shared_stuff/files/python_test_data/2016081200_006_0001'
+       >>> import datetime
+       >>> fst_file = '/home/dja001/shared_stuff/files/python_test_data/2016081200_006_0001'
        >>> #
        >>> #directly with a datetime object
-       >>> dt = DT.datetime(2016, 8, 12, 6, 10, 0, tzinfo=DT.timezone.utc)
-       >>> p0 = fst_tools.getData(fileName=fstFile, varName='P0', datev=dt)
+       >>> dt = datetime.datetime(2016, 8, 12, 6, 10, 0, tzinfo=datetime.timezone.utc)
+       >>> p0 = fst_tools.get_data(file_name=fst_file, var_name='P0', datev=dt)
        >>> print(p0.keys())
-       dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1List', 'levList'])
+       dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1_list', 'lev_list'])
        >>> print(p0['values'].shape)
        (328, 278)
        >>> #
        >>> #with a CMC timestamp
-       >>> p0 = fst_tools.getData(fileName=fstFile, varName='P0', datev=412062350)
+       >>> p0 = fst_tools.get_data(file_name=fst_file, var_name='P0', datev=412062350)
        >>> print(p0.keys())
-       dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1List', 'levList'])
+       dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1_list', 'lev_list'])
        >>> print(p0['values'].shape)
        (328, 278)
 
@@ -129,10 +127,10 @@ def getData( fileName:   Optional[str]=None,
        Output 'lat' and 'lon' as 2D numpy arrays of latitudes and longitudes associated with the grid of UU
 
        >>> import domcmc.fst_tools as fst_tools
-       >>> fstFile = '/home/dja001/shared_stuff/files/python_test_data/2016081200_006_0001'
-       >>> uu = fst_tools.getData(fileName=fstFile, varName='UU', latlon=True)
+       >>> fst_file = '/home/dja001/shared_stuff/files/python_test_data/2016081200_006_0001'
+       >>> uu = fst_tools.get_data(file_name=fst_file, var_name='UU', latlon=True)
        >>> print(uu.keys())
-       dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1List', 'levList', 'lat', 'lon'])
+       dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1_list', 'lev_list', 'lat', 'lon'])
        >>> print(uu['values'].shape)
        (328, 278, 81)
        >>> print(uu['lat'].shape, uu['lon'].shape)
@@ -142,23 +140,23 @@ def getData( fileName:   Optional[str]=None,
        Also output latitudes and longitudes associated with the grid of VV 
 
        >>> import domcmc.fst_tools as fst_tools
-       >>> fstFile = '/home/dja001/shared_stuff/files/python_test_data/2016081200_006_0001'
-       >>> ip1input = [75597472, 95258609, 95237745, 95011105, 94859092, 94831040]
-       >>> vv = fst_tools.getData(fileName=fstFile, varName='VV', ip1=ip1input, latlon=True)
+       >>> fst_file = '/home/dja001/shared_stuff/files/python_test_data/2016081200_006_0001'
+       >>> ip1_input = [75597472, 95258609, 95237745, 95011105, 94859092, 94831040]
+       >>> vv = fst_tools.get_data(file_name=fst_file, var_name='VV', ip1=ip1_input, latlon=True)
        >>> print(vv.keys())
-       dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1List', 'levList', 'lat', 'lon'])
+       dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1_list', 'lev_list', 'lat', 'lon'])
        >>> print(vv['values'].shape)
        (328, 278, 6)
-       >>> print(vv['ip1List'])
+       >>> print(vv['ip1_list'])
        [75597472, 95258609, 95237745, 95011105, 94859092, 94831040]
        >>> print(vv['lat'].shape, vv['lon'].shape)
        (328, 278) (328, 278)
        >>>
        >>> #note that even with a list of ip1s, output levels get sorted 
        >>> #from lowest to highest
-       >>> ip1input = [ 95258609, 94859092, 95011105, 95237745, 94831040, 75597472]
-       >>> vv = fst_tools.getData(fileName=fstFile, varName='VV', ip1=ip1input, latlon=True)
-       >>> print(vv['ip1List'])
+       >>> ip1_input = [ 95258609, 94859092, 95011105, 95237745, 94831040, 75597472]
+       >>> vv = fst_tools.get_data(file_name=fst_file, var_name='VV', ip1=ip1_input, latlon=True)
+       >>> print(vv['ip1_list'])
        [75597472, 95258609, 95237745, 95011105, 94859092, 94831040]
 
 
@@ -166,10 +164,10 @@ def getData( fileName:   Optional[str]=None,
        Output pressure associated with HU
 
        >>> import domcmc.fst_tools as fst_tools
-       >>> fstFile = '/home/dja001/shared_stuff/files/python_test_data/2016081200_006_0001'
-       >>> hu = fst_tools.getData(fileName=fstFile, varName='HU', presFromVar=True)
+       >>> fst_file = '/home/dja001/shared_stuff/files/python_test_data/2016081200_006_0001'
+       >>> hu = fst_tools.get_data(file_name=fst_file, var_name='HU', pres_from_var=True)
        >>> print(hu.keys())
-       dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1List', 'levList', 'pressure'])
+       dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1_list', 'lev_list', 'pressure'])
        >>> print(hu['values'].shape)
        (328, 278, 81)
        >>> print(hu['pressure'].shape)
@@ -182,37 +180,37 @@ def getData( fileName:   Optional[str]=None,
        https://wiki.cmc.ec.gc.ca/wiki/Pxs2pxt
 
        >>> import domcmc.fst_tools as fst_tools
-       >>> fstFile = '/home/dja001/shared_stuff/files/python_test_data/2016081200_006_0001'
+       >>> fst_file = '/home/dja001/shared_stuff/files/python_test_data/2016081200_006_0001'
        >>> # if the fst file is large, you may run out of space in $TMPDIR and 
        >>> # get weird errors. 
-       >>> # In this case use tmpDir=/path/to/big/temporary/directory/ in your call to getData
-       >>> tt = fst_tools.getData(fileName=fstFile, varName='TT', presLevels=[800,500,200])
+       >>> # In this case use tmp_dir=/path/to/big/temporary/directory/ in your call to get_data
+       >>> tt = fst_tools.get_data(file_name=fst_file, var_name='TT', pres_levels=[800,500,200])
        >>> print(tt.keys())
-       dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1List', 'levList'])
+       dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1_list', 'lev_list'])
        >>> print(tt['values'].shape)
        (328, 278, 3)
 
        It is often the case that a directory will contain many standard files, each containing entries
        at different validity times. Because of the different naming conventions found at the CMC, it
        then becomes cumbersome to figure out which file contains the desired entries at a given validity 
-       time. To address this problem, use the dirName option. All standard files will be searched 
+       time. To address this problem, use the dir_name option. All standard files will be searched
        for the desired entry. 
 
        >>> import domcmc.fst_tools as fst_tools
-       >>> import datetime as DT
-       >>> fstDir = '/home/dja001/shared_stuff/files/python_test_data/'
-       >>> dt = DT.datetime(2016, 8, 12, 6, 20, 0, tzinfo=DT.timezone.utc)
-       >>> pr = fst_tools.getData(dirName=fstDir, varName='PR', datev=dt)
+       >>> import datetime
+       >>> fst_dir = '/home/dja001/shared_stuff/files/python_test_data/'
+       >>> dt = datetime.datetime(2016, 8, 12, 6, 20, 0, tzinfo=datetime.timezone.utc)
+       >>> pr = fst_tools.get_data(dir_name=fst_dir, var_name='PR', datev=dt)
        >>> print(pr.keys())
-       dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1List', 'levList'])
+       dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1_list', 'lev_list'])
        >>> print(pr['values'].shape)
        (324, 274)
        >>> # For large directories containing many standard files, use the prefix and/or suffix arguments to 
        >>> # restrict the search and speedup things
        >>> # in the following example, only files matching 2016081200*0001 will be searched.
-       >>> pr2 = fst_tools.getData(dirName=fstDir, prefix='2016081200', suffix='0001', varName='PR', datev=dt)
+       >>> pr2 = fst_tools.get_data(dir_name=fst_dir, prefix='2016081200', suffix='0001', var_name='PR', datev=dt)
        >>> print(pr2.keys())
-       dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1List', 'levList'])
+       dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1_list', 'lev_list'])
        >>> print(pr2['values'].shape)
        (324, 274)
 
@@ -229,148 +227,148 @@ def getData( fileName:   Optional[str]=None,
     import rpnpy.librmn.all as rmn
     import rpnpy.utils.fstd3d as fstd3d
     import rpnpy.vgd.all as vgd
-    from rpnpy.rpndate import RPNDate
-    import datetime as DT
+    from   rpnpy.rpndate import RPNDate
+    import datetime
 
     #was varname specified
-    if varName is None :
-        raise ValueError('varName: must be set to a fst variable name eg P0, UU, TT, etc')
+    if var_name is None :
+        raise ValueError('var_name: must be set to a fst variable name eg P0, UU, TT, etc')
 
-    #get cmcTimestamp from datev
+    #get cmc_timestamp from datev
     if datev is None :
-        cmcTimestamp=None
+        cmc_timestamp=None
     else:
-        if isinstance(datev, DT.datetime):
-            dateObj = RPNDate(datev)
-            cmcTimestamp = dateObj.datev
+        if isinstance(datev, datetime.datetime):
+            date_obj = RPNDate(datev)
+            cmc_timestamp = date_obj.datev
         else:
             #assume a cmc timestamp is passed
             try:
-                cmcTimestamp=int(datev)
+                cmc_timestamp=int(datev)
             except:
                 raise ValueError('datev can only a datetime.datetime object OR a an integer representing a CMC timestamp')
 
-    #use fileName or find file with matching entry
-    if fileName is not None :
-        #if fileName was provided use this
-        if not os.path.isfile(fileName) :
+    #use file_name or find file with matching entry
+    if file_name is not None :
+        #if file_name was provided use this
+        if not os.path.isfile(file_name) :
             #files does not exist, throw a warning and return None
-            warnings.warn('fileName: '+fileName+' does not exist')
+            warnings.warn('file_name: ' + file_name + ' does not exist')
             return None
         #by default input file is the file that will be read
-        fileToRead = fileName
+        file_to_read = file_name
     else :
-        if dirName is not None :
-            #iterate over files in dirName and check which one match the search criterion
+        if dir_name is not None :
+            #iterate over files in dir_name and check which one match the search criterion
             #non FST files are skipped
-            if not os.path.isdir(dirName) :
-                raise ValueError('dirName: '+fileName+' is not a valid path')
+            if not os.path.isdir(dir_name) :
+                raise ValueError('dir_name: ' + file_name + ' is not a valid path')
             #get a list of files in there
-            fileList = glob.glob(dirName+'/'+prefix+'*'+suffix)
-            if len(fileList) == 0 :
-                raise RuntimeError('no files in :'+dirName+'/'+prefix+'*'+suffix)
-            fileToRead = None
-            for thisFile in fileList :
-                foundFile = None
-                if presLevels is not None :
+            file_list = glob.glob(dir_name + '/' + prefix + '*' + suffix)
+            if len(file_list) == 0 :
+                raise RuntimeError('no files in :' + dir_name + '/' + prefix + '*' + suffix)
+            file_to_read = None
+            for this_file in file_list :
+                found_file = None
+                if pres_levels is not None :
                     #entries necessary for vertical interpolation
-                    p0 = _getVar(thisFile, 'P0',       
-                                 datev=cmcTimestamp,   
-                                 ip1=None, ip2=None, ip3=None,
-                                 ig1=ig1,  ig2=ig2,  ig3=ig3,
-                                 typvar=typvar, etiquette=etiquette,
-                                 metaOnly=True, verbose=0,
-                                 skipNonFst=True)
-                    var = _getVar(thisFile, varName,       
-                                 datev=p0['meta']['datev'],   
-                                 ip1=None, ip2=None, ip3=None,
-                                 ig1=ig1,  ig2=ig2,  ig3=ig3,
-                                 typvar=typvar, etiquette=etiquette,
-                                 metaOnly=True, verbose=0,
-                                 skipNonFst=True)
+                    p0 = _get_var(this_file, 'P0',
+                                  datev=cmc_timestamp,
+                                  ip1=None, ip2=None, ip3=None,
+                                  ig1=ig1,  ig2=ig2,  ig3=ig3,
+                                  typvar=typvar, etiquette=etiquette,
+                                  meta_only=True, verbose=0,
+                                  skip_non_fst=True)
+                    var = _get_var(this_file, var_name,
+                                   datev=p0['meta']['datev'],
+                                   ip1=None, ip2=None, ip3=None,
+                                   ig1=ig1,  ig2=ig2,  ig3=ig3,
+                                   typvar=typvar, etiquette=etiquette,
+                                   meta_only=True, verbose=0,
+                                   skip_non_fst=True)
                     if (p0 is not None) and (var is not None) :
                         #this file contains all necessary data
-                        foundFile = thisFile
+                        found_file = this_file
                 else :
                     #entry necessary for normal retrieval
-                    var = _getVar(thisFile, varName,       
-                                  datev=cmcTimestamp,   
-                                  ip1=ip1, ip2=ip2, ip3=ip3,
-                                  ig1=ig1, ig2=ig2, ig3=ig3,
-                                  typvar=typvar, etiquette=etiquette,
-                                  metaOnly=True, verbose=0,
-                                  skipNonFst=True)
+                    var = _get_var(this_file, var_name,
+                                   datev=cmc_timestamp,
+                                   ip1=ip1, ip2=ip2, ip3=ip3,
+                                   ig1=ig1, ig2=ig2, ig3=ig3,
+                                   typvar=typvar, etiquette=etiquette,
+                                   meta_only=True, verbose=0,
+                                   skip_non_fst=True)
                     if var is not None :
                         #this file contains all necessary data
-                        foundFile = thisFile
+                        found_file = this_file
 
                     #endif
 
-                if foundFile is not None : 
-                    if fileToRead is not None : 
-                        raise RuntimeError('search criterion matched in two different files:'+fileToRead+'   '+thisFile)
+                if found_file is not None :
+                    if file_to_read is not None :
+                        raise RuntimeError('search criterion matched in two different files:'+file_to_read+'   '+this_file)
                     else:
-                        fileToRead = thisFile
+                        file_to_read = this_file
             #endfor
 
             #if no match found after iterating over all files, return None
-            if fileToRead is None :
+            if file_to_read is None :
                 return None
     
         else :
-            raise ValueError('Please provide one of fileName or dirName arguments')
+            raise ValueError('Please provide one of file_name or dir_name arguments')
 
     #a random number for temporary files
     rand = np.round(np.random.rand(1)*1e7).astype('int')
-    randStr = '{:07d}'.format(rand[0])
+    rand_str = '{:07d}'.format(rand[0])
 
     #temporary dir for this session
-    if tmpDir is None :
-        tmpDir = os.environ['TMPDIR']
+    if tmp_dir is None :
+        tmp_dir = os.environ['TMPDIR']
     #valid dir
-    if not os.path.exists(tmpDir) :
-        raise ValueError('tmpDir: '+tmpDir+' is not a valid path ')
+    if not os.path.exists(tmp_dir) :
+        raise ValueError('tmp_dir: ' + tmp_dir + ' is not a valid path ')
 
     #vertical interpolation  to pressure levels is desired
-    if presLevels is not None :
+    if pres_levels is not None :
 
         #comma separated string with list of levels [hPa]
-        levelStr = ''
-        for thisLevel in presLevels :
-            levelStr += '{:07.2f}'.format(thisLevel)+','
-        levelStr = levelStr.rstrip(',')
+        level_str = ''
+        for thisLevel in pres_levels :
+            level_str += '{:07.2f}'.format(thisLevel)+','
+        level_str = level_str.rstrip(',')
 
         #code for type of interpolation eg CUB_UU
         #CUB_    CUBIC   
         #CUBP_   CUBIC   Clip negative values
         #LIN_    LINEAR  
         #NOI_    NO INTERPOLATION    Use for surface or 2D  variables only 
-        varStr= 'CUB_'+varName
+        var_str= 'CUB_' + var_name
 
 
         #get info on P0 and desired variable
-        p0 = _getVar(fileName, 'P0',       
-                     datev=cmcTimestamp,   
-                     ip1=None, ip2=None, ip3=None,
-                     ig1=ig1,  ig2=ig2,  ig3=ig3,
-                     typvar=typvar, etiquette=etiquette)
+        p0 = _get_var(file_name, 'P0',
+                      datev=cmc_timestamp,
+                      ip1=None, ip2=None, ip3=None,
+                      ig1=ig1,  ig2=ig2,  ig3=ig3,
+                      typvar=typvar, etiquette=etiquette)
         if p0 is None:
             raise ValueError('P0 is necessary for vertical interpolation')
 
-        var = _getVar(fileName, varName,       
-                     datev=p0['meta']['datev'],   
-                     ip1=None, ip2=None, ip3=None,
-                     ig1=ig1,  ig2=ig2,  ig3=ig3,
-                     typvar=typvar, etiquette=etiquette,
-                     metaOnly=True)
+        var = _get_var(file_name, var_name,
+                       datev=p0['meta']['datev'],
+                       ip1=None, ip2=None, ip3=None,
+                       ig1=ig1,  ig2=ig2,  ig3=ig3,
+                       typvar=typvar, etiquette=etiquette,
+                       meta_only=True)
         if var is None:
-            raise ValueError(varName+'not found in source fst file')
+            raise ValueError(var_name + 'not found in source fst file')
          
         #files necessary for vertical interpolation
-        directives_file = tmpDir+'/'+randStr+'directives'
-        src_p0_file     = tmpDir+'/'+randStr+'srcP0File.fst'
-        pxsFile         = tmpDir+'/'+randStr+'tempPxsFile.fst'
-        interpFile      = tmpDir+'/'+randStr+'interplated.fst'
+        directives_file = tmp_dir + '/' + rand_str + 'directives'
+        src_p0_file     = tmp_dir + '/' + rand_str + 'srcP0File.fst'
+        pxs_file        = tmp_dir + '/' + rand_str + 'tempPxsFile.fst'
+        interp_file     = tmp_dir + '/' + rand_str + 'interplated.fst'
 
         #check that variable and p0 are on same grid
         if (p0['meta']['ig1'] == var['meta']['ig1']) and (p0['meta']['ig2'] == var['meta']['ig2']) :
@@ -378,15 +376,15 @@ def getData( fileName:   Optional[str]=None,
 
             #first step is to get P0 in the pxs file
             try:
-               iunit = rmn.fstopenall(pxsFile,rmn.FST_RW)
+               iunit = rmn.fstopenall(pxs_file,rmn.FST_RW)
             except:
-               raise rmn.FSTDError("File not found/readable: %s" % pxsFile)
+               raise rmn.FSTDError("File not found/readable: %s" % pxs_file)
              
             try:
                # Write P0 record + grid identifiers
-               p0Entry = p0['meta']
-               p0Entry['d'] = np.asfortranarray(p0['values'],dtype='float32')
-               rmn.fstecr(iunit, p0Entry)
+               p0_entry = p0['meta']
+               p0_entry['d'] = np.asfortranarray(p0['values'],dtype='float32')
+               rmn.fstecr(iunit, p0_entry)
                rmn.writeGrid(iunit, p0['grid'])
                rmn.fstecr(iunit, p0['toctoc'])
             except:
@@ -425,7 +423,7 @@ def getData( fileName:   Optional[str]=None,
             #PRINTF, lun, " champ('P0')"
             #FREE_LUN, lun
             #cmd = 'pgsm    -iment '+src_p0_file     + $ 
-            #      '        -ozsrt '+pxsFile        + $
+            #      '        -ozsrt '+pxs_file        + $
             #      '        -i     '+directives_file
             #SPAWN, cmd, status, errstat
             #;if process was not sucessful stop
@@ -439,43 +437,43 @@ def getData( fileName:   Optional[str]=None,
             #SPAWN, 'rm -f '+src_p0_file      
 
         #Do the interpolation
-        #make sure interpolation packsge is loaded
+        #make sure interpolation package is loaded
         try:
             path = subprocess.check_output(["which", "d.pxs2pxt"])
         except:
             raise RuntimeError('you must load pxs2pxt:   . ssmuse-sh -d eccc/cmd/cmdn/pxs2pxt/3.16.6/default')
         
-        cmd= ['d.pxs2pxt', '-s'    , fileName,
+        cmd= ['d.pxs2pxt', '-s'    , file_name,
                            '-datev', '{:07d}'.format(p0['meta']['datev']),
-                           '-d'    , interpFile, 
-                           '-pxs'  , pxsFile,
-                           '-plevs', levelStr,
-                           '-var'  , varStr ]
+                           '-d'    , interp_file,
+                           '-pxs'  , pxs_file,
+                           '-plevs', level_str,
+                           '-var'  , var_str]
         try:
             subprocess.run(cmd)
         except:
             raise RuntimeError('Something went wrong with pxs2pxt')
 
         #cleanup
-        os.remove(pxsFile)
+        os.remove(pxs_file)
 
-        #change fileToRead to interpolated data file
-        fileToRead = interpFile
+        #change file_to_read to interpolated data file
+        file_to_read = interp_file
 
     #END vertical interpolation if statement --------------------------------
 
     #get fst data for output
-    var = _getVar(fileToRead, varName,       
-                  datev=cmcTimestamp,   
-                  ip1=ip1, ip2=ip2, ip3=ip3,
-                  ig1=ig1, ig2=ig2, ig3=ig3,
-                  typvar=typvar, etiquette=etiquette)
+    var = _get_var(file_to_read, var_name,
+                   datev=cmc_timestamp,
+                   ip1=ip1, ip2=ip2, ip3=ip3,
+                   ig1=ig1, ig2=ig2, ig3=ig3,
+                   typvar=typvar, etiquette=etiquette)
 
     #get 3D pressure if requested
-    if (var is not None) and presFromVar :
+    if (var is not None) and pres_from_var :
 
-        #error trapping done by _getVar above
-        iunit = rmn.fstopenall(fileToRead,rmn.FST_RO)
+        #error trapping done by _get_var above
+        iunit = rmn.fstopenall(file_to_read,rmn.FST_RO)
 
         try:
             #linked ip1/ig1 ip2/ig2
@@ -485,9 +483,9 @@ def getData( fileName:   Optional[str]=None,
             raise RuntimeError('something went wrong getting vertical grid descriptor')
 
         try:
-            thisDatev = cmcTimestamp if cmcTimestamp is not None else -1
-            press = fstd3d.get_levels_press(iunit, vgrid, var['values'].shape[0:2], var['ip1List'],
-                                            datev=thisDatev)
+            this_datev = cmc_timestamp if cmc_timestamp is not None else -1
+            press = fstd3d.get_levels_press(iunit, vgrid, var['values'].shape[0:2], var['ip1_list'],
+                                            datev=this_datev)
         except:
             raise RuntimeError('something went wrong with pressure retrieval')
         finally:
@@ -499,24 +497,24 @@ def getData( fileName:   Optional[str]=None,
 
     #get latitude and longitude if requested
     if (var is not None) and latlon == True :
-        llDict = rmn.gdll(var['grid'])
-        var['lat'] = llDict['lat']
-        var['lon'] = llDict['lon']
+        ll_dict = rmn.gdll(var['grid'])
+        var['lat'] = ll_dict['lat']
+        var['lon'] = ll_dict['lon']
 
     return var
 
-#end of getData
+#end of get_data
 
 
 
 
 
-def _getVar(fileName, varName,       
-             datev=None,           #input
+def _get_var(file_name, var_name,
+             datev=None,  #input
              ip1=None, ip2=None, ip3=None,
              ig1=None, ig2=None, ig3=None,
              typvar=None, etiquette=None,
-             metaOnly=False, verbose=0, skipNonFst=False) :
+             meta_only=False, verbose=0, skip_non_fst=False) :
     """
     get variable in fst file
 
@@ -530,53 +528,53 @@ def _getVar(fileName, varName,
 
         The smallest k index will correspond to the lowest vertical level.
 
-        if metaOnly=True the routine returns the meta data for the first entry and stops
+        if meta_only=True the routine returns the meta data for the first entry and stops
 
     """
     import numpy as np
     import rpnpy.librmn.all as rmn
     import warnings
 
-    if not rmn.isFST(fileName) :
-        if skipNonFst == False :
+    if not rmn.isFST(file_name) :
+        if skip_non_fst == False :
             #default behaviour is to abort on non FST files
-            raise rmn.FSTDError("Not an FSTD file: %s " % fileName)
+            raise rmn.FSTDError("Not an FSTD file: %s " % file_name)
         else :
-            #with skipNonFst=True, None is returned without error
+            #with skip_non_fst=True, None is returned without error
             return None
      
     # Open
     try:
-        iunit = rmn.fstopenall(fileName,rmn.FST_RO)
+        iunit = rmn.fstopenall(file_name, rmn.FST_RO)
     except:
-        raise rmn.FSTDError("File not found/readable: %s" % fileName)
+        raise rmn.FSTDError("File not found/readable: %s" % file_name)
      
     #look for first entry matching search criteria 
     if type(ip1) is list :
         for myip1 in ip1 :
-            keyDict = _myFstinf(iunit, datev=datev, etiket=etiquette, 
-                                ip1=myip1, ip2=ip2, ip3=ip3, 
-                                ig1=ig1, ig2=ig2, ig3=ig3, 
-                                typvar=typvar, nomvar=varName)
-            if keyDict is not None:
+            key_dict = _my_fstinf(iunit, datev=datev, etiket=etiquette,
+                                  ip1=myip1, ip2=ip2, ip3=ip3,
+                                  ig1=ig1, ig2=ig2, ig3=ig3,
+                                  typvar=typvar, nomvar=var_name)
+            if key_dict is not None:
             # found at least one record
                 break
     else:
-        keyDict = _myFstinf(iunit, datev=datev, etiket=etiquette, 
-                            ip1=ip1, ip2=ip2, ip3=ip3, 
-                            ig1=ig1, ig2=ig2, ig3=ig3, 
-                            typvar=typvar, nomvar=varName)
+        key_dict = _my_fstinf(iunit, datev=datev, etiket=etiquette,
+                              ip1=ip1, ip2=ip2, ip3=ip3,
+                              ig1=ig1, ig2=ig2, ig3=ig3,
+                              typvar=typvar, nomvar=var_name)
 
-    if keyDict is None :
+    if key_dict is None :
         nz = 0
         is_there = False
         rmn.fstcloseall(iunit)
         if verbose > 0 :
             print('Did not find anything in:')
-            print(fileName)
+            print(file_name)
             print('with:')
-            print('varName='     , varName)
-            print('datev='       , datev)
+            print('var_name=', var_name)
+            print('datev='   , datev)
             if datev is not None:
                 try:
                     (yyyymmdd, hhmmsshh) = rmn.newdate(rmn.NEWDATE_STAMP2PRINT, int(datev))
@@ -597,13 +595,13 @@ def _getVar(fileName, varName,
 
         #get meta for this entry
         nz = 1
-        refMeta = rmn.fstprm(keyDict['key'])
-        grid    = rmn.readGrid(iunit, refMeta)
-        toctoc  = rmn.fstlir(iunit,nomvar='!!',ip1=refMeta['ig1'],ip2=refMeta['ig2'])
-        (rp1, rp2, rp3) = rmn.DecodeIp(refMeta['ip1'],refMeta['ip2'],refMeta['ip3'])
+        ref_meta = rmn.fstprm(key_dict['key'])
+        grid     = rmn.readGrid(iunit, ref_meta)
+        toctoc   = rmn.fstlir(iunit,nomvar='!!',ip1=ref_meta['ig1'],ip2=ref_meta['ig2'])
+        (rp1, rp2, rp3) = rmn.DecodeIp(ref_meta['ip1'],ref_meta['ip2'],ref_meta['ip3'])
 
-        if metaOnly :
-            return {'meta':refMeta,'grid':grid,'toctoc':toctoc}
+        if meta_only :
+            return {'meta':ref_meta,'grid':grid,'toctoc':toctoc}
 
         if ip1 is None :
             #ip1 keyword not provided
@@ -611,53 +609,53 @@ def _getVar(fileName, varName,
             #with same meta but different ip1
 
             #save ip1, and key for later
-            keyList = [keyDict['key']]
-            ip1List = [refMeta['ip1']]
-            levList = [rp1.v1]
+            key_list = [key_dict['key']]
+            ip1_list = [ref_meta['ip1']]
+            lev_list = [rp1.v1]
 
-            keyDict, keepThisOne = _myFstinfx(keyDict, iunit, datev=refMeta['datev'], etiket=refMeta['etiket'], 
-                                              ip1=None,           ip2=refMeta['ip2'], ip3=refMeta['ip3'], 
-                                              ig1=refMeta['ig1'], ig2=refMeta['ig2'], ig3=refMeta['ig3'], 
-                                              typvar=refMeta['typvar'], nomvar=refMeta['nomvar'])
+            key_dict, keep_this_one = _my_fstinfx(key_dict, iunit, datev=ref_meta['datev'], etiket=ref_meta['etiket'],
+                                                  ip1=None, ip2=ref_meta['ip2'], ip3=ref_meta['ip3'],
+                                                  ig1=ref_meta['ig1'], ig2=ref_meta['ig2'], ig3=ref_meta['ig3'],
+                                                  typvar=ref_meta['typvar'], nomvar=ref_meta['nomvar'])
 
-            while (keyDict is not None) :
+            while (key_dict is not None) :
 
-                if keepThisOne : 
+                if keep_this_one :
                     #we have a valid entry save info for later
                     nz += 1
-                    meta = rmn.fstprm(keyDict['key'])
+                    meta = rmn.fstprm(key_dict['key'])
                     (rp1, rp2, rp3) = rmn.DecodeIp(meta['ip1'],meta['ip2'],meta['ip3'])
                     #save ip1, and key for later
-                    keyList.append(keyDict['key'])
-                    ip1List.append(meta['ip1'])
-                    levList.append(rp1.v1)
+                    key_list.append(key_dict['key'])
+                    ip1_list.append(meta['ip1'])
+                    lev_list.append(rp1.v1)
 
                 #check if there are entries with same meta but different ip1
-                keyDict, keepThisOne = _myFstinfx(keyDict, iunit, datev=refMeta['datev'], etiket=refMeta['etiket'], 
-                                                  ip1=None,           ip2=refMeta['ip2'], ip3=refMeta['ip3'], 
-                                                  ig1=refMeta['ig1'], ig2=refMeta['ig2'], ig3=refMeta['ig3'], 
-                                                  typvar=refMeta['typvar'], nomvar=refMeta['nomvar'])
+                key_dict, keep_this_one = _my_fstinfx(key_dict, iunit, datev=ref_meta['datev'], etiket=ref_meta['etiket'],
+                                                      ip1=None,            ip2=ref_meta['ip2'], ip3=ref_meta['ip3'],
+                                                      ig1=ref_meta['ig1'], ig2=ref_meta['ig2'], ig3=ref_meta['ig3'],
+                                                      typvar=ref_meta['typvar'], nomvar=ref_meta['nomvar'])
         elif type(ip1) is list :
             nz = 0
-            keyList = []
-            ip1List = []
-            levList = []
+            key_list = []
+            ip1_list = []
+            lev_list = []
             for myip1 in ip1:
                 #check if there are entries with same meta 
-                keyDict = _myFstinf(iunit, datev=refMeta['datev'], etiket=refMeta['etiket'], 
-                                                 ip1=myip1,           ip2=refMeta['ip2'], ip3=refMeta['ip3'], 
-                                                 ig1=refMeta['ig1'], ig2=refMeta['ig2'], ig3=refMeta['ig3'], 
-                                                 typvar=refMeta['typvar'], nomvar=refMeta['nomvar'])
+                key_dict = _my_fstinf(iunit, datev=ref_meta['datev'], etiket=ref_meta['etiket'],
+                                      ip1=myip1,           ip2=ref_meta['ip2'], ip3=ref_meta['ip3'],
+                                      ig1=ref_meta['ig1'], ig2=ref_meta['ig2'], ig3=ref_meta['ig3'],
+                                      typvar=ref_meta['typvar'], nomvar=ref_meta['nomvar'])
 
-                if keyDict is not None : 
+                if key_dict is not None :
                     #we have a valid entry save info for later
                     nz += 1
-                    meta = rmn.fstprm(keyDict['key'])
+                    meta = rmn.fstprm(key_dict['key'])
                     (rp1, rp2, rp3) = rmn.DecodeIp(meta['ip1'],meta['ip2'],meta['ip3'])
                     #save ip1, and key for later
-                    keyList.append(keyDict['key'])
-                    ip1List.append(meta['ip1'])
-                    levList.append(rp1.v1)
+                    key_list.append(key_dict['key'])
+                    ip1_list.append(meta['ip1'])
+                    lev_list.append(rp1.v1)
                 else:
                     raise ValueError('No entries in fst file with ip1: '+str(myip1))
 
@@ -667,49 +665,49 @@ def _getVar(fileName, varName,
     else:
 
         #desired output to numpy
-        keyArr = np.array(keyList)
-        ip1Arr = np.array(ip1List)
-        levArr = np.array(levList)
+        key_arr = np.array(key_list)
+        ip1_arr = np.array(ip1_list)
+        lev_arr = np.array(lev_list)
 
         #sorted unique indices
-        dum, inds = np.unique(levArr, return_index=True)
+        dum, inds = np.unique(lev_arr, return_index=True)
         #reverse order      hyb=1. is the lowest level
-        revInds = np.flip(inds)
+        rev_inds = np.flip(inds)
 
         #raise error if there are non-unique levels represented
-        if ip1Arr.shape != revInds.shape:
+        if ip1_arr.shape != rev_inds.shape:
             warnings.warn('Found more than one entry in fst file with same meta; this may or may not be bad... ; adjusting nz')
-            nz = len(revInds)
+            nz = len(rev_inds)
 
         #sorted arrays
-        keyArr = keyArr[revInds]
-        ip1Arr = ip1Arr[revInds]
-        levArr = levArr[revInds]
+        key_arr = key_arr[rev_inds]
+        ip1_arr = ip1_arr[rev_inds]
+        lev_arr = lev_arr[rev_inds]
 
         #read output
-        shape =  (refMeta['shape'][0],refMeta['shape'][1],nz)
+        shape =  (ref_meta['shape'][0],ref_meta['shape'][1],nz)
         values = np.zeros(shape, order='F', dtype='float32')
         for kk in range(nz):
-            dum = rmn.fstluk(keyArr[kk].item())
+            dum = rmn.fstluk(key_arr[kk].item())
             values[:,:,kk] = dum['d']
 
     # Close file
     rmn.fstcloseall(iunit)
 
     return {'values':np.squeeze(values), 
-            'meta':refMeta,
+            'meta':ref_meta,
             'grid':grid,
             'toctoc':toctoc,
-            'ip1List':ip1Arr.tolist(),
-            'levList':levArr.tolist()}
+            'ip1_list':ip1_arr.tolist(),
+            'lev_list':lev_arr.tolist()}
 
-#end _getVar---------------------------
+#end _get_var---------------------------
 
 
-def _myFstinf(iunit, datev=None, etiket=None, 
-             ip1=None, ip2=None, ip3=None, 
-             ig1=None, ig2=None, ig3=None, 
-             typvar=None, nomvar=None):
+def _my_fstinf(iunit, datev=None, etiket=None,
+               ip1=None, ip2=None, ip3=None,
+               ig1=None, ig2=None, ig3=None,
+               typvar=None, nomvar=None):
     """
     Wrapper for fstinf that allow :
         - parameters to have the None value
@@ -725,34 +723,34 @@ def _myFstinf(iunit, datev=None, etiket=None,
     if typvar       is None : typvar=' '
     if etiket       is None : etiket=' '
 
-    keyDict = rmn.fstinf(iunit, datev=datev, etiket=etiket, 
-                         ip1=ip1, ip2=ip2, ip3=ip3, 
-                         typvar=typvar, nomvar=nomvar)
+    key_dict = rmn.fstinf(iunit, datev=datev, etiket=etiket,
+                          ip1=ip1, ip2=ip2, ip3=ip3,
+                          typvar=typvar, nomvar=nomvar)
 
-    if (keyDict is not None) and ( (ig1 is not None) or (ig2 is not None) or (ig3 is not None) ) :
+    if (key_dict is not None) and ( (ig1 is not None) or (ig2 is not None) or (ig3 is not None) ) :
 
         #get meta
-        meta = rmn.fstprm(keyDict['key'])
+        meta = rmn.fstprm(key_dict['key'])
 
         #extra filtering of the IGs
         #   key is set to None if no match
         if ig1 is not None:
             if ig1 != meta['ig1']:
-                keyDict = None
+                key_dict = None
         if ig2 is not None:
             if ig2 != meta['ig2']:
-                keyDict = None
+                key_dict = None
         if ig3 is not None:
             if ig3 != meta['ig3']:
-                keyDict = None
+                key_dict = None
 
-    return keyDict
+    return key_dict
 
 
-def _myFstinfx(key, iunit, datev=None, etiket=None, 
-              ip1=None, ip2=None, ip3=None, 
-              ig1=None, ig2=None, ig3=None, 
-              typvar=None, nomvar=None):
+def _my_fstinfx(key, iunit, datev=None, etiket=None,
+                ip1=None, ip2=None, ip3=None,
+                ig1=None, ig2=None, ig3=None,
+                typvar=None, nomvar=None):
     """
     Wrapper for fstinfx that allow :
         - parameters to have the None value
@@ -760,7 +758,7 @@ def _myFstinfx(key, iunit, datev=None, etiket=None,
 
     Returns
     key         as usual
-    keepThisOne   a flag to indicate that a match was not found with the provided IGs
+    keep_this_one   a flag to indicate that a match was not found with the provided IGs
     """
     import rpnpy.librmn.all as rmn
 
@@ -772,38 +770,38 @@ def _myFstinfx(key, iunit, datev=None, etiket=None,
     if typvar       is None : typvar=' '
     if etiket       is None : etiket=' '
 
-    keepThisOne=True
-    keyDict = rmn.fstinfx(key, iunit, datev=datev, etiket=etiket, 
-                          ip1=ip1, ip2=ip2, ip3=ip3, 
-                          typvar=typvar, nomvar=nomvar)
+    keep_this_one=True
+    key_dict = rmn.fstinfx(key, iunit, datev=datev, etiket=etiket,
+                           ip1=ip1, ip2=ip2, ip3=ip3,
+                           typvar=typvar, nomvar=nomvar)
 
-    if (keyDict is not None) and ( (ig1 is not None) or (ig2 is not None) or (ig3 is not None) ) :
+    if (key_dict is not None) and ( (ig1 is not None) or (ig2 is not None) or (ig3 is not None) ) :
 
         #get meta
-        meta = rmn.fstprm(keyDict['key'])
+        meta = rmn.fstprm(key_dict['key'])
 
         #extra filtering of the IGs
         #   key is set to None if no match
         if ig1 is not None:
             if ig1 != meta['ig1']:
-                keepThisOne=False
+                keep_this_one=False
         if ig2 is not None:
             if ig2 != meta['ig2']:
-                keepThisOne=False
+                keep_this_one=False
         if ig3 is not None:
             if ig3 != meta['ig3']:
-                keepThisOne=False
+                keep_this_one=False
 
-    return keyDict, keepThisOne
+    return key_dict, keep_this_one
 
 if __name__ != '__main__' :
 
     import rpnpy.librmn.all as rmn
-    #this is not a great option but it will only print
-    # "c_fstopi option MSGLVL set to 6"
-    #once
 
     #less verbose outputs on import
+    #   this is not a great option but it will only print
+    #    "c_fstopi option MSGLVL set to 6"
+    #   once
     rmn.fstopt(rmn.FSTOP_MSGLVL, rmn.FSTOPI_MSG_ERROR)
 
 
