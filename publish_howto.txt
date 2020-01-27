@@ -8,6 +8,8 @@ Notes for me to remember steps involved in publishing this package
 
 - adjust version number in VERSION
 
+- add change to changelog
+
 - make bundle by running:
     - You probably want to cleanup
     python setup.py clean --all

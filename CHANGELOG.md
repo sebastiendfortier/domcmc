@@ -18,3 +18,7 @@ Please use the following tags when editing this file:
 - Now adheres to PEP8 for the naming of functions and keywords. 
   This change does break backward compatibility. Sorry for the bother but better now than 
   later I guess. 
+
+## [2.0.1] - 2020-01-27
+### Fixed
+- Remove all temp files when interpolating onto pressure levels
