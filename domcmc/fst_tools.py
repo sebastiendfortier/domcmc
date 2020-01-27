@@ -330,7 +330,9 @@ def get_data(file_name:     Optional[str]=None,
         raise ValueError('tmp_dir: ' + tmp_dir + ' is not a valid path ')
 
     #vertical interpolation  to pressure levels is desired
+    remove_interpolated = False
     if pres_levels is not None :
+        remove_interpolated = True
 
         #comma separated string with list of levels [hPa]
         level_str = ''
@@ -365,8 +367,6 @@ def get_data(file_name:     Optional[str]=None,
             raise ValueError(var_name + 'not found in source fst file')
          
         #files necessary for vertical interpolation
-        directives_file = tmp_dir + '/' + rand_str + 'directives'
-        src_p0_file     = tmp_dir + '/' + rand_str + 'srcP0File.fst'
         pxs_file        = tmp_dir + '/' + rand_str + 'tempPxsFile.fst'
         interp_file     = tmp_dir + '/' + rand_str + 'interplated.fst'
 
@@ -393,48 +393,9 @@ def get_data(file_name:     Optional[str]=None,
                 # always close file
                 rmn.fstcloseall(iunit)
         else:
-            #p0 and variable are on the same grid
             #interpolate p0 to variable grid
             #   Not sure this is needed anymore.... 
             raise RuntimeError('hinterp with P0 on a different grid not yet implemented')
-            #;P0 and var are NOT on the same grid, interpolate P0 to the variable grid
-            #;copy p0 at desired time
-            #;write directives file
-            #OPENW,  lun, directives_file, /GET_LUN
-            #PRINTF, lun, " desire(-1,['>>','^^','^>','!!'])"
-            #PRINTF, lun, " desire(-1,['P0'],-1,"+STRING(datev,FORMAT='(i012)')+")"
-            #FREE_LUN, lun
-            #;copy necessary info in intermediate file
-            #cmd='editfst -s '+origin_filename      + $
-            #                ' -d '+src_p0_file     + $
-            #                ' -i '+directives_file
-            #print, cmd
-            #SPAWN, cmd, output, errstat
-            #print, output
-
-            #;remove tmp files
-            #SPAWN, 'rm -f '+directives_file      
-            #;write pgsm directives file
-            #OPENW,  lun, directives_file, /GET_LUN
-            #PRINTF, lun, " sortie(STD,4000,A)"
-            #PRINTF, lun, " grille(TAPE2,"+STRING(header_var.ig1,header_var.ig2,header_var.ig3,FORMAT='(i5,",",i5,",",i1)')+")"
-            #PRINTF, lun, " setintx(LINEAIR)"
-            #PRINTF, lun, " heure(TOUT)"
-            #PRINTF, lun, " champ('P0')"
-            #FREE_LUN, lun
-            #cmd = 'pgsm    -iment '+src_p0_file     + $ 
-            #      '        -ozsrt '+pxs_file        + $
-            #      '        -i     '+directives_file
-            #SPAWN, cmd, status, errstat
-            #;if process was not sucessful stop
-            #IF errstat NE 0 THEN BEGIN
-            #    err_mes = 'Something went wrong with PGSM' +newline+$
-            #              'CMD: '+cmd
-            #    MESSAGE, err_mes, INFORMATIONAL=informational
-            #ENDIF
-            #;remove tmp files
-            #SPAWN, 'rm -f '+directives_file      
-            #SPAWN, 'rm -f '+src_p0_file      
 
         #Do the interpolation
         #make sure interpolation package is loaded
@@ -500,6 +461,10 @@ def get_data(file_name:     Optional[str]=None,
         ll_dict = rmn.gdll(var['grid'])
         var['lat'] = ll_dict['lat']
         var['lon'] = ll_dict['lon']
+
+    #remove fst file containing interpolated data
+    if remove_interpolated:
+        os.remove(interp_file)
 
     return var
 
