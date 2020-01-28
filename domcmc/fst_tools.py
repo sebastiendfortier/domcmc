@@ -566,6 +566,7 @@ def _get_var(file_name, var_name,
         (rp1, rp2, rp3) = rmn.DecodeIp(ref_meta['ip1'],ref_meta['ip2'],ref_meta['ip3'])
 
         if meta_only :
+            rmn.fstcloseall(iunit)
             return {'meta':ref_meta,'grid':grid,'toctoc':toctoc}
 
         if ip1 is None :
@@ -658,7 +659,6 @@ def _get_var(file_name, var_name,
 
     # Close file
     rmn.fstcloseall(iunit)
-
     return {'values':np.squeeze(values), 
             'meta':ref_meta,
             'grid':grid,

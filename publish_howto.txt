@@ -8,7 +8,7 @@ Notes for me to remember steps involved in publishing this package
 
 - adjust version number in VERSION
 
-- add change to changelog
+- add change to CHANGELOG.md
 
 - make bundle by running:
     - You probably want to cleanup
