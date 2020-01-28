@@ -22,3 +22,7 @@ Please use the following tags when editing this file:
 ## [2.0.1] - 2020-01-27
 ### Fixed
 - Remove all temp files when interpolating onto pressure levels
+
+## [2.0.2] - 2020-01-28
+### Fixed
+- Fixed bug where iunit was not closed when get_var was called with the mets_only option

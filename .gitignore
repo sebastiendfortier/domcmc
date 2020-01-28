@@ -1,3 +1,4 @@
+conda_build
 .*.swp
 auto_examples
 build
