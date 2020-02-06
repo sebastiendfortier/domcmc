@@ -561,9 +561,19 @@ def _get_var(file_name, var_name,
         #get meta for this entry
         nz = 1
         ref_meta = rmn.fstprm(key_dict['key'])
-        grid     = rmn.readGrid(iunit, ref_meta)
-        toctoc   = rmn.fstlir(iunit,nomvar='!!',ip1=ref_meta['ig1'],ip2=ref_meta['ig2'])
         (rp1, rp2, rp3) = rmn.DecodeIp(ref_meta['ip1'],ref_meta['ip2'],ref_meta['ip3'])
+        #get grid
+        try:
+            grid     = rmn.readGrid(iunit, ref_meta)
+        except:
+            warnings.warn('rmn.readGrid encountered a problem, setting grid to None')
+            grid = None
+        #get vgrid
+        try:
+            toctoc   = rmn.fstlir(iunit,nomvar='!!',ip1=ref_meta['ig1'],ip2=ref_meta['ig2'])
+        except:
+            warnings.warn('No !! entry found in file, setting toctoc to None')
+            toctoc = None
 
         if meta_only :
             rmn.fstcloseall(iunit)
