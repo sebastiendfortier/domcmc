@@ -214,6 +214,31 @@ def get_data(file_name:     Optional[str]=None,
        >>> print(pr2['values'].shape)
        (324, 274)
 
+       The Yin-Yang grid can be represented in different ways in standard files. 
+       
+       Sometimes, both the Yin and Yang grids are combined and appear as single entries in 
+       standard files. 
+       In these cases, the *get_data* method will separate the Yin and Yang grids for you. 
+       In the following example, look for the "yin" and "yang" entries that appear in the output 
+       dictionary. Each comes with its own values, meta data and lat/lon. 
+
+       For convenience, the "regular" values, meta data and lat/lon are set to those of the Yin grid. 
+       
+       >>> import domcmc.fst_tools as fst_tools
+       >>> import datetime
+       >>> fst_file = '/home/dja001/shared_stuff/files/python_test_data/2016122900_yinyang_example.fst'
+       >>> dt = datetime.datetime(2016, 12, 29, 0, 0, 0, tzinfo=datetime.timezone.utc)
+       >>> pr = fst_tools.get_data(file_name=fst_file, var_name='PR', datev=dt, latlon=True)
+       >>> # Note the yin and yang entries in this dictionary
+       >>> # "values", "lat" and "lon" are those of the Yin grid
+       >>> print(pr.keys())
+       dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1_list', 'lev_list', 'yin', 'yang', 'lat', 'lon'])
+       >>> #data on the Yin grid
+       >>> print(pr['yin'].keys())
+       dict_keys(['meta', 'toctoc', 'ip1_list', 'lev_list', 'grid', 'values', 'lat', 'lon'])
+       >>> #data on the Yang grid
+       >>> print(pr['yang'].keys())
+       dict_keys(['meta', 'toctoc', 'ip1_list', 'lev_list', 'grid', 'values', 'lat', 'lon'])
 
 
 
@@ -224,6 +249,7 @@ def get_data(file_name:     Optional[str]=None,
     import warnings
     import glob
     import subprocess
+    import copy
     import rpnpy.librmn.all as rmn
     import rpnpy.utils.fstd3d as fstd3d
     import rpnpy.vgd.all as vgd
@@ -456,11 +482,67 @@ def get_data(file_name:     Optional[str]=None,
         var['pressure'] = press['phPa']
 
 
-    #get latitude and longitude if requested
-    if (var is not None) and latlon == True :
-        ll_dict = rmn.gdll(var['grid'])
-        var['lat'] = ll_dict['lat']
-        var['lon'] = ll_dict['lon']
+    #handle yin-yang grid in one record
+    # optionally output lat/lon information
+    if (var is not None):
+
+        if 'nsubgrids' not in var['grid']:
+            ngrids = 1
+        else:
+            ngrids = var['grid']['nsubgrids']
+
+        if ngrids == 1 and latlon == True :
+	    #single grid -> not yin-yang
+            ll_dict = rmn.gdll(var['grid'])
+            var['lat'] = ll_dict['lat']
+            var['lon'] = ll_dict['lon']
+
+        elif ngrids == 2: 
+	    #two grids -> yin-yang
+	    #In this case, the outdict is modified to output data on the two grids
+            #with the "unnamed" defaut output refering to the yin grid.
+
+            #links to common entries in var dict
+            var['yin']  = {'meta':     var['meta'],
+                           'toctoc':   var['toctoc'],
+                           'ip1_list': var['ip1_list'],
+                           'lev_list': var['lev_list']}
+            var['yang'] = {'meta':     var['meta'],
+                           'toctoc':   var['toctoc'],
+                           'ip1_list': var['ip1_list'],
+                           'lev_list': var['lev_list']}
+
+            #yin grid 
+            var['yin']['grid']  = copy.deepcopy(var['grid']['subgrid'][0])
+            #yang grid 
+            var['yang']['grid'] = copy.deepcopy(var['grid']['subgrid'][1])
+            #grid in var dict is a link to yin grid
+            var['grid'] = var['yin']['grid']
+
+            #temp copy of values
+            yy_values = copy.deepcopy(var['values'])
+            nx, ny = yy_values.shape
+            half_ny = int(ny/2)
+            #yin values 
+            var['yin']['values']  = copy.deepcopy(yy_values[:,:half_ny])
+            #yang values 
+            var['yang']['values'] = copy.deepcopy(yy_values[:,half_ny:])
+            #values in var is a link to yin values
+            var['values'] = var['yin']['values']
+
+            #outout latlon if desired
+            if latlon == True :
+                #yin
+                ll_yin  = rmn.gdll(var['yin']['grid'])
+                var['yin']['lat'] = copy.deepcopy(ll_yin['lat'])
+                var['yin']['lon'] = copy.deepcopy(ll_yin['lon'])
+                #yang
+                ll_yang = rmn.gdll(var['yang']['grid'])
+                var['yang']['lat'] = copy.deepcopy(ll_yang['lat'])
+                var['yang']['lon'] = copy.deepcopy(ll_yang['lon'])
+                #latlon in var are those of the yin grid
+                var['lat'] = var['yin']['lat']
+                var['lon'] = var['yin']['lon']
 
     #remove fst file containing interpolated data
     if remove_interpolated:
@@ -769,8 +851,14 @@ def _my_fstinfx(key, iunit, datev=None, etiket=None,
 
     return key_dict, keep_this_one
 
-if __name__ != '__main__' :
+if __name__ == '__main__' :
+    #when called as main run tests
+    import rpnpy.librmn.all as rmn
+    import doctest
+    rmn.fstopt(rmn.FSTOP_MSGLVL, rmn.FSTOPI_MSG_ERROR)
+    doctest.testmod()
 
+else :
     import rpnpy.librmn.all as rmn
 
     #less verbose outputs on import
@@ -778,5 +866,6 @@ if __name__ != '__main__' :
     #    "c_fstopi option MSGLVL set to 6"
     #   once
     rmn.fstopt(rmn.FSTOP_MSGLVL, rmn.FSTOPI_MSG_ERROR)
+
 
 

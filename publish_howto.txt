@@ -4,7 +4,7 @@ Notes for me to remember steps involved in publishing this package
 - On a separate issue branch
     make changes
     run tests
-    make new documentation page
+    make/adjust documentation page
 
 - adjust version number in VERSION
 
@@ -29,6 +29,8 @@ For CONDA package
     conda install anaconda-client conda-build
 conda skeleton pypi domcmc
 conda build domcmc
+
+- If everything worked out, squash commits and push to gitlab master
 
     - Can test local build with:
     conda install -c file:///home/ords/mrd/rpndat/dja001/python_miniconda3/envs/test1/conda-bld/ domcmc --override-channels
