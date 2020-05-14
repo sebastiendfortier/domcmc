@@ -8,8 +8,21 @@ Please use the following tags when editing this file:
 *Removed* for now removed features.
 *Fixed* for any bug fixes. 
 
+## [2.0.7] - 2020-05-15
+### Added
+- added RPNpy dependencies so that domcmc can work from a straight install
 
+## [2.0.6] - 2020-05-14
+### Fixed
+- Same syntax for dependencies as for domutils. Hopefully this will solve the dependency problem
 
+## [2.0.5] - 2020-05-14
+### Added
+- Very loose numpy and python versions for easier install
+
+## [2.0.4] - 2020-05-14
+### Fixed
+- Fixed numpy and python versions to fix a dependency problem
 
 ## [2.0.3] - 2020-03-11
 ### Added

@@ -22,11 +22,17 @@ Installation
 
 Use of `Anaconda <https://wiki.cmc.ec.gc.ca/wiki/Anaconda>`_ environments is strongly encouraged.
 
-Install **domcmc** on the science network using my local channel:
+Install **domcmc** in an existing anaconda environment:
 
   .. code-block:: bash
 
-     conda install domcmc -c /home/dja001/shared_stuff/conda_channel --override-channels
+     conda install domcmc -c dja001
+
+Alternatively, you can create a new conda environment for domcmc:
+
+  .. code-block:: bash
+
+     conda create -n new_env_name domcmc -c dja001
 
 Pip installation is also supported. From anywhere with internet connection, run:
 

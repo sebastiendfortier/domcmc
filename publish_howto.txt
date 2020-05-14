@@ -48,7 +48,7 @@ conda index conda_channel/
 - test the conda package in a frest conda environment with:
 conda install domcmc -c /home/dja001/shared_stuff/conda_channel --override-channels
 or
-conda update domcmc -c /home/dja001/shared_stuff/conda_channel --override-channels
+conda upgrade domcmc -c /home/dja001/shared_stuff/conda_channel --override-channels
 
 - push the docs
 rsync -auv --delete docs/_build/html/ /home/dja001/public_html/domcmc/
