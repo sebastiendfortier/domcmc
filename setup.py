@@ -22,5 +22,6 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=find_packages(),    
-    install_requires=['python >= 3.7.0', 'numpy >= 1.17.0' ],
+    python_requires='>=3', 
+    install_requires=['python >= 3.7.0', 'numpy >= 1.17.0', 'scipy', 'pytz'],
 )
