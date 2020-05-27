@@ -93,7 +93,7 @@ def get_data(file_name:     Optional[str]=None,
        Get first matching entry of P0 as a 2D ndarray. 
 
        >>> import domcmc.fst_tools as fst_tools
-       >>> fst_file = '/home/dja001/shared_stuff/files/python_test_data/2016081200_006_0001'
+       >>> fst_file = '/home/dja001/shared_stuff/files/test_data_for_domcmc/2016081200_006_0001'
        >>> p0 = fst_tools.get_data(file_name=fst_file, var_name='P0')
        >>> print(p0.keys())
        dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1_list', 'lev_list'])
@@ -105,7 +105,7 @@ def get_data(file_name:     Optional[str]=None,
 
        >>> import domcmc.fst_tools as fst_tools
        >>> import datetime
-       >>> fst_file = '/home/dja001/shared_stuff/files/python_test_data/2016081200_006_0001'
+       >>> fst_file = '/home/dja001/shared_stuff/files/test_data_for_domcmc/2016081200_006_0001'
        >>> #
        >>> #directly with a datetime object
        >>> dt = datetime.datetime(2016, 8, 12, 6, 10, 0, tzinfo=datetime.timezone.utc)
@@ -127,7 +127,7 @@ def get_data(file_name:     Optional[str]=None,
        Output 'lat' and 'lon' as 2D numpy arrays of latitudes and longitudes associated with the grid of UU
 
        >>> import domcmc.fst_tools as fst_tools
-       >>> fst_file = '/home/dja001/shared_stuff/files/python_test_data/2016081200_006_0001'
+       >>> fst_file = '/home/dja001/shared_stuff/files/test_data_for_domcmc/2016081200_006_0001'
        >>> uu = fst_tools.get_data(file_name=fst_file, var_name='UU', latlon=True)
        >>> print(uu.keys())
        dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1_list', 'lev_list', 'lat', 'lon'])
@@ -140,7 +140,7 @@ def get_data(file_name:     Optional[str]=None,
        Also output latitudes and longitudes associated with the grid of VV 
 
        >>> import domcmc.fst_tools as fst_tools
-       >>> fst_file = '/home/dja001/shared_stuff/files/python_test_data/2016081200_006_0001'
+       >>> fst_file = '/home/dja001/shared_stuff/files/test_data_for_domcmc/2016081200_006_0001'
        >>> ip1_input = [75597472, 95258609, 95237745, 95011105, 94859092, 94831040]
        >>> vv = fst_tools.get_data(file_name=fst_file, var_name='VV', ip1=ip1_input, latlon=True)
        >>> print(vv.keys())
@@ -164,7 +164,7 @@ def get_data(file_name:     Optional[str]=None,
        Output pressure associated with HU
 
        >>> import domcmc.fst_tools as fst_tools
-       >>> fst_file = '/home/dja001/shared_stuff/files/python_test_data/2016081200_006_0001'
+       >>> fst_file = '/home/dja001/shared_stuff/files/test_data_for_domcmc/2016081200_006_0001'
        >>> hu = fst_tools.get_data(file_name=fst_file, var_name='HU', pres_from_var=True)
        >>> print(hu.keys())
        dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1_list', 'lev_list', 'pressure'])
@@ -180,7 +180,7 @@ def get_data(file_name:     Optional[str]=None,
        https://wiki.cmc.ec.gc.ca/wiki/Pxs2pxt
 
        >>> import domcmc.fst_tools as fst_tools
-       >>> fst_file = '/home/dja001/shared_stuff/files/python_test_data/2016081200_006_0001'
+       >>> fst_file = '/home/dja001/shared_stuff/files/test_data_for_domcmc/2016081200_006_0001'
        >>> # if the fst file is large, you may run out of space in $TMPDIR and 
        >>> # get weird errors. 
        >>> # In this case use tmp_dir=/path/to/big/temporary/directory/ in your call to get_data
@@ -198,7 +198,7 @@ def get_data(file_name:     Optional[str]=None,
 
        >>> import domcmc.fst_tools as fst_tools
        >>> import datetime
-       >>> fst_dir = '/home/dja001/shared_stuff/files/python_test_data/'
+       >>> fst_dir = '/home/dja001/shared_stuff/files/test_data_for_domcmc/'
        >>> dt = datetime.datetime(2016, 8, 12, 6, 20, 0, tzinfo=datetime.timezone.utc)
        >>> pr = fst_tools.get_data(dir_name=fst_dir, var_name='PR', datev=dt)
        >>> print(pr.keys())
@@ -226,7 +226,7 @@ def get_data(file_name:     Optional[str]=None,
        
        >>> import domcmc.fst_tools as fst_tools
        >>> import datetime
-       >>> fst_file = '/home/dja001/shared_stuff/files/python_test_data/2016122900_yinyang_example.fst'
+       >>> fst_file = '/home/dja001/shared_stuff/files/test_data_for_domcmc/2016122900_yinyang_example.fst'
        >>> dt = datetime.datetime(2016, 12, 29, 0, 0, 0, tzinfo=datetime.timezone.utc)
        >>> pr = fst_tools.get_data(file_name=fst_file, var_name='PR', datev=dt, latlon=True)
        >>> # Note the yin and yang entries in this dictionary
