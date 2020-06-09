@@ -10,11 +10,11 @@ dominik.jacques@canada.ca
 
 514-421-7294
 
-I will then make you a developer on the `gitlab repo <https://gitlab.science.gc.ca/dja001/domcmc>`_.
+I will then make you a developer on the `GitLab repo <https://gitlab.science.gc.ca/dja001/domcmc>`_.
 
-From the gitlab web interface, you should then:
+From the GitLab web interface, you should then:
 
-   #. Create a gitlab issue (In *Issues* use the *New Issue* buttom) describing the proposed changes.
+   #. Create a GitLab issue (In *Issues* use the *New Issue* buttom) describing the proposed changes.
 
    #. Create a new branch from the issue (click on the issus and then on *New branch*).
 
@@ -26,14 +26,16 @@ From the gitlab web interface, you should then:
 
    #. Clone the source and go in the package directory
       code
+
         .. code-block:: bash
 
            git clone git@gitlab.science.gc.ca:dja001/domcmc.git 
            cd domcmc
 
-   #. Create a clean `Anaconda <https://wiki.cmc.ec.gc.ca/wiki/Anaconda>`_ developmemt environment 
+   #. Create a clean `conda <https://wiki.cmc.ec.gc.ca/wiki/conda>`_ development environment 
       and activate it. 
-      You need internet access for this. 
+      You need Internet access for this. 
+
         .. code-block:: bash
 
            conda env create --name domcmc_dev_env -f docs/environment.yml
@@ -41,19 +43,21 @@ From the gitlab web interface, you should then:
    
    #. Switch to the issue 
       branch
+
         .. code-block:: bash
 
            git fetch origin
            git checkout --track origin/<Issue branch name>
 
    #. Make sure Python RPN and pxs2pxt are loaded in your environment. 
-      See Home page of docs and load all SSM mentionned.
+      See :ref:`quick_start` and load all SSM mentioned.
 
    #. Modify the code to adress the issue; make a test for the 
       modifications
 
    #. Run the 
       tests
+
         .. code-block:: bash
 
            cd docs
@@ -71,6 +75,7 @@ From the gitlab web interface, you should then:
 
       You can see the output by 
       linking 
+
         .. code-block:: bash
   
            domcmc/docs/_build/html/
@@ -78,11 +83,12 @@ From the gitlab web interface, you should then:
       to your *public_html*.
 
    #. Once you are happy with the modifications, push the new version
-      on gitlab 
+      on GitLab 
+
         .. code-block:: bash
 
            git push origin <Issue branch name>
 
-   #. From the gitlab web interface, create a new merge request from your branch. We will then 
+   #. From the GitLab web interface, create a new merge request from your branch. We will then 
       discuss the changes until they are accepted and merged into the master branch. 
 

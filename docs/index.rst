@@ -20,9 +20,9 @@ The package **domcmc** provides the module **fst_tools** for reading data in the
 Installation
 ===================
 
-Use of `Anaconda <https://wiki.cmc.ec.gc.ca/wiki/Anaconda>`_ environments is strongly encouraged.
+Use of `conda <https://wiki.cmc.ec.gc.ca/wiki/conda>`_ environments is strongly encouraged.
 
-Install **domcmc** in an existing anaconda environment:
+Install **domcmc** in an existing conda environment:
 
   .. code-block:: bash
 
@@ -34,17 +34,27 @@ Alternatively, you can create a new conda environment for domcmc:
 
      conda create -n new_env_name domcmc -c dja001
 
-Pip installation is also supported. From anywhere with internet connection, run:
+Pip installation is also supported. From anywhere with Internet connection, run:
 
   .. code-block:: bash
 
      pip install domcmc  
 
+.. _quick_start:
+
 Quick start
 ===================
 
-Make sure `Python RPN <https://wiki.cmc.ec.gc.ca/wiki/Python-RPN>`_ is loaded in your 
+This package requires some in-house software to be loaded in your shell environment.
+
+If you installed domcmc through conda, you don't need to do anything more as the 
+necessary SSM packages are automatically loaded when you activate the conda environment
+where you installed domcmc.
+
+If you installed domcmc with pip, make sure 
+`Python RPN <https://wiki.cmc.ec.gc.ca/wiki/Python-RPN>`_ is loaded in your 
 environment:
+
   .. code-block:: bash
 
 	 . ssmuse-sh -x comm/eccc/all/opt/intelcomp/intelpsxe-cluster-19.0.3.199
@@ -53,11 +63,12 @@ environment:
 
 For vertical interpolation on pressure levels, you will also 
 need:
+
   .. code-block:: bash
 
      . ssmuse-sh -d eccc/cmd/cmdn/pxs2pxt/3.16.6/default
 
-Then, in your python scripts:
+Then, in your Python scripts:
 
   .. code-block:: python
 
@@ -83,19 +94,7 @@ at: https://gitlab.science.gc.ca/dja001/domcmc
    contribute
 
 .. toctree::
-   :caption: acknowledgement
+   :caption: Acknowledgement
 
    acknowledgement
-
-
-
-
-
-
-
-
-
-
-
-
 

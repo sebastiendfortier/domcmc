@@ -17,18 +17,21 @@ Notes for me to remember steps involved in publishing this package
 python setup.py sdist bdist_wheel
 
 - upload to TEST pypi
-tine upload --repository-url https://test.pypi.org/legacy/ dist/*
+twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 
 - upload to official pypi repo
 twine upload dist/*
 
 For CONDA package
 
-- from a DIFFERENT directory 
+- from the root of the repo
     To load in environment if not already done:
     conda install anaconda-client conda-build
-conda skeleton pypi domcmc
-conda build domcmc
+conda build conda_build/domcmc
+
+Test the built package in a new environment:
+
+conda create -n domcmc_test domcmc --use-local
 
 - If everything worked out, squash commits and push to gitlab master
 

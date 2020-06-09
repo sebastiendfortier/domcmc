@@ -8,6 +8,10 @@ Please use the following tags when editing this file:
 *Removed* for now removed features.
 *Fixed* for any bug fixes. 
 
+## [2.0.8] - 2020-05-27
+### Added
+- Now loading necessary SSM (rpnPy, vgrid, d.pxs2pxt, etc.) during environment activation
+
 ## [2.0.7] - 2020-05-15
 ### Added
 - added RPNpy dependencies so that domcmc can work from a straight install
