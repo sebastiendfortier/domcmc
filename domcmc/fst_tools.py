@@ -298,23 +298,26 @@ def get_data(file_name:     Optional[str]=None,
                 found_file = None
                 if pres_levels is not None :
                     #entries necessary for vertical interpolation
-                    p0 = _get_var(this_file, 'P0',
-                                  datev=cmc_timestamp,
-                                  ip1=None, ip2=None, ip3=None,
-                                  ig1=ig1,  ig2=ig2,  ig3=ig3,
-                                  typvar=typvar, etiquette=etiquette,
-                                  meta_only=True, verbose=0,
-                                  skip_non_fst=True)
                     var = _get_var(this_file, var_name,
-                                   datev=p0['meta']['datev'],
+                                   datev=cmc_timestamp,
                                    ip1=None, ip2=None, ip3=None,
                                    ig1=ig1,  ig2=ig2,  ig3=ig3,
                                    typvar=typvar, etiquette=etiquette,
                                    meta_only=True, verbose=0,
                                    skip_non_fst=True)
-                    if (p0 is not None) and (var is not None) :
-                        #this file contains all necessary data
-                        found_file = this_file
+                    if var is not None :
+                        #we found a file which contains entry at desired date
+                        #try to get P0 with that
+                        p0 = _get_var(this_file, 'P0',
+                                      datev=cmc_timestamp,
+                                      ip1=None, ip2=None, ip3=None,
+                                      ig1=ig1,  ig2=ig2,  ig3=ig3,
+                                      typvar=typvar, etiquette=etiquette,
+                                      meta_only=True, verbose=0,
+                                      skip_non_fst=True)
+                        if p0 is not None:
+                            #this file contains all necessary data
+                            found_file = this_file
                 else :
                     #entry necessary for normal retrieval
                     var = _get_var(this_file, var_name,
@@ -327,8 +330,6 @@ def get_data(file_name:     Optional[str]=None,
                     if var is not None :
                         #this file contains all necessary data
                         found_file = this_file
-
-                    #endif
 
                 if found_file is not None :
                     if file_to_read is not None :
@@ -375,7 +376,7 @@ def get_data(file_name:     Optional[str]=None,
 
 
         #get info on P0 and desired variable
-        p0 = _get_var(file_name, 'P0',
+        p0 = _get_var(file_to_read, 'P0',
                       datev=cmc_timestamp,
                       ip1=None, ip2=None, ip3=None,
                       ig1=ig1,  ig2=ig2,  ig3=ig3,
@@ -383,7 +384,7 @@ def get_data(file_name:     Optional[str]=None,
         if p0 is None:
             raise ValueError('P0 is necessary for vertical interpolation')
 
-        var = _get_var(file_name, var_name,
+        var = _get_var(file_to_read, var_name,
                        datev=p0['meta']['datev'],
                        ip1=None, ip2=None, ip3=None,
                        ig1=ig1,  ig2=ig2,  ig3=ig3,
@@ -430,7 +431,7 @@ def get_data(file_name:     Optional[str]=None,
         except:
             raise RuntimeError('you must load pxs2pxt:   . ssmuse-sh -d eccc/cmd/cmdn/pxs2pxt/3.16.6/default')
         
-        cmd= ['d.pxs2pxt', '-s'    , file_name,
+        cmd= ['d.pxs2pxt', '-s'    , file_to_read,
                            '-datev', '{:07d}'.format(p0['meta']['datev']),
                            '-d'    , interp_file,
                            '-pxs'  , pxs_file,
@@ -439,7 +440,7 @@ def get_data(file_name:     Optional[str]=None,
         try:
             subprocess.run(cmd)
         except:
-            raise RuntimeError('Something went wrong with pxs2pxt')
+            raise RuntimeError('Something went wrong with pxs2pxt, often speficying a tmp_dir solves the problem')
 
         #cleanup
         os.remove(pxs_file)

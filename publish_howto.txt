@@ -4,9 +4,18 @@ Notes for me to remember steps involved in publishing this package
 - On a separate issue branch
     make changes
     run tests
+
+        cd docs
+        . ssmuse-sh -d eccc/cmd/cmdn/pxs2pxt/3.16.6/default
+        make clean
+        make doctest
+        make html
+
     make/adjust documentation page
 
-- adjust version number in VERSION
+- adjust version number in 
+    - VERSION
+    - conda_build/domcmc/meta.yaml
 
 - add change to CHANGELOG.md
 
