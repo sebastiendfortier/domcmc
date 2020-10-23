@@ -1,5 +1,5 @@
 {% set name = "domcmc" %}
-{% set version = "2.0.8" %}
+{% set version = "2.0.9" %}
 
 package:
   name: {{ name }}
@@ -9,12 +9,12 @@ source:
   path: "../../"
 
 build:
-  number: 3
+  number: 1
 
 requirements:
   host:
     - pip
-    - python >=3.7.0
+    - python =3.7.0
   run:
     - numpy >=1.17.0
     - python >=3.7.0
