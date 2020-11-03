@@ -36,6 +36,7 @@ def get_data(file_name:     Optional[str]=None,
        - Pressure values associated with requested data are optionally outputted
        - Vertical interpolation on pressure levels is supported 
        - Option to search valid entry in all standard files located within a directory 
+       - If present in the standard file, the Yin and Yang grids are separately outputted 
 
     Args:
        file_name:     /path/to/fst/file.fst
@@ -48,6 +49,12 @@ def get_data(file_name:     Optional[str]=None,
        prefix:        In combination with dir_name; prefix of files to search
        suffix:        In combination with dir_name; suffix of files to search
        var_name:      Name of variable to read in fst file  eg:   UU, VV, TT, MPQC, etc.
+                      If you set var_name = "wind_vectors",
+                      output dictionary will contain different representations of the wind vectors
+                          1 - along the grid ("uu" and "vv" in knots)
+                          2 - along the East-West / North-South axes ("uuwe" and "vvsn" in m/s)
+                          3 - wind modulus ("uv" in knots) and direction ("wd" degrees meteorological convention)
+                      Please check the examples on how to use wind vectors
        pres_from_var: Flag to output pressure associated with returned data
        datev:         Cmc timestamp for validity date of retrieved data
        ip1:           Criterion for choosing what data will be read.
@@ -85,164 +92,20 @@ def get_data(file_name:     Optional[str]=None,
 
             'pressure': (ndarray) 2D or 3D array of pressure (conditional on pres_levels)
 
+            'yin':      -- only for Yin-Yang grids -- contains all of the above for Yin grid
+                        If present, the 'values', lat', 'lon' and 'pressure' entries of the output
+                        dictionary are from the Yin grid.
+            
+            'yang':     -- only for Yin-Yang grids -- contains all of the above for Yang grid
+
         }
 
-
-    Examples:
-
-       Get first matching entry of P0 as a 2D ndarray. 
-
-       >>> import domcmc.fst_tools as fst_tools
-       >>> fst_file = '/home/dja001/shared_stuff/files/test_data_for_domcmc/2016081200_006_0001'
-       >>> p0 = fst_tools.get_data(file_name=fst_file, var_name='P0')
-       >>> print(p0.keys())
-       dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1_list', 'lev_list'])
-       >>> print(p0['values'].shape)
-       (328, 278)
-
-
-       Get P0 at a different validity date:
-
-       >>> import domcmc.fst_tools as fst_tools
-       >>> import datetime
-       >>> fst_file = '/home/dja001/shared_stuff/files/test_data_for_domcmc/2016081200_006_0001'
-       >>> #
-       >>> #directly with a datetime object
-       >>> dt = datetime.datetime(2016, 8, 12, 6, 10, 0, tzinfo=datetime.timezone.utc)
-       >>> p0 = fst_tools.get_data(file_name=fst_file, var_name='P0', datev=dt)
-       >>> print(p0.keys())
-       dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1_list', 'lev_list'])
-       >>> print(p0['values'].shape)
-       (328, 278)
-       >>> #
-       >>> #with a CMC timestamp
-       >>> p0 = fst_tools.get_data(file_name=fst_file, var_name='P0', datev=412062350)
-       >>> print(p0.keys())
-       dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1_list', 'lev_list'])
-       >>> print(p0['values'].shape)
-       (328, 278)
-
-
-       Get UU as a 3D ndarray. 
-       Output 'lat' and 'lon' as 2D numpy arrays of latitudes and longitudes associated with the grid of UU
-
-       >>> import domcmc.fst_tools as fst_tools
-       >>> fst_file = '/home/dja001/shared_stuff/files/test_data_for_domcmc/2016081200_006_0001'
-       >>> uu = fst_tools.get_data(file_name=fst_file, var_name='UU', latlon=True)
-       >>> print(uu.keys())
-       dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1_list', 'lev_list', 'lat', 'lon'])
-       >>> print(uu['values'].shape)
-       (328, 278, 81)
-       >>> print(uu['lat'].shape, uu['lon'].shape)
-       (328, 278) (328, 278)
-
-       Get VV as a 3D ndarray given by the input of ip1 list. 
-       Also output latitudes and longitudes associated with the grid of VV 
-
-       >>> import domcmc.fst_tools as fst_tools
-       >>> fst_file = '/home/dja001/shared_stuff/files/test_data_for_domcmc/2016081200_006_0001'
-       >>> ip1_input = [75597472, 95258609, 95237745, 95011105, 94859092, 94831040]
-       >>> vv = fst_tools.get_data(file_name=fst_file, var_name='VV', ip1=ip1_input, latlon=True)
-       >>> print(vv.keys())
-       dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1_list', 'lev_list', 'lat', 'lon'])
-       >>> print(vv['values'].shape)
-       (328, 278, 6)
-       >>> print(vv['ip1_list'])
-       [75597472, 95258609, 95237745, 95011105, 94859092, 94831040]
-       >>> print(vv['lat'].shape, vv['lon'].shape)
-       (328, 278) (328, 278)
-       >>>
-       >>> #note that even with a list of ip1s, output levels get sorted 
-       >>> #from lowest to highest
-       >>> ip1_input = [ 95258609, 94859092, 95011105, 95237745, 94831040, 75597472]
-       >>> vv = fst_tools.get_data(file_name=fst_file, var_name='VV', ip1=ip1_input, latlon=True)
-       >>> print(vv['ip1_list'])
-       [75597472, 95258609, 95237745, 95011105, 94859092, 94831040]
-
-
-       Get first matching entries of HU as 3D numpy array. 
-       Output pressure associated with HU
-
-       >>> import domcmc.fst_tools as fst_tools
-       >>> fst_file = '/home/dja001/shared_stuff/files/test_data_for_domcmc/2016081200_006_0001'
-       >>> hu = fst_tools.get_data(file_name=fst_file, var_name='HU', pres_from_var=True)
-       >>> print(hu.keys())
-       dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1_list', 'lev_list', 'pressure'])
-       >>> print(hu['values'].shape)
-       (328, 278, 81)
-       >>> print(hu['pressure'].shape)
-       (328, 278, 81)
-
-
-       Get TT field interpolated at 800, 500 and 200 hPa.
-       returned 'values' is a 3D array where k=0 indicates the lowest level (here 800 hPa)
-       pxs2pxt must be available in environment
-       https://wiki.cmc.ec.gc.ca/wiki/Pxs2pxt
-
-       >>> import domcmc.fst_tools as fst_tools
-       >>> fst_file = '/home/dja001/shared_stuff/files/test_data_for_domcmc/2016081200_006_0001'
-       >>> # if the fst file is large, you may run out of space in $TMPDIR and 
-       >>> # get weird errors. 
-       >>> # In this case use tmp_dir=/path/to/big/temporary/directory/ in your call to get_data
-       >>> tt = fst_tools.get_data(file_name=fst_file, var_name='TT', pres_levels=[800,500,200])
-       >>> print(tt.keys())
-       dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1_list', 'lev_list'])
-       >>> print(tt['values'].shape)
-       (328, 278, 3)
-
-       It is often the case that a directory will contain many standard files, each containing entries
-       at different validity times. Because of the different naming conventions found at the CMC, it
-       then becomes cumbersome to figure out which file contains the desired entries at a given validity 
-       time. To address this problem, use the dir_name option. All standard files will be searched
-       for the desired entry. 
-
-       >>> import domcmc.fst_tools as fst_tools
-       >>> import datetime
-       >>> fst_dir = '/home/dja001/shared_stuff/files/test_data_for_domcmc/'
-       >>> dt = datetime.datetime(2016, 8, 12, 6, 20, 0, tzinfo=datetime.timezone.utc)
-       >>> pr = fst_tools.get_data(dir_name=fst_dir, var_name='PR', datev=dt)
-       >>> print(pr.keys())
-       dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1_list', 'lev_list'])
-       >>> print(pr['values'].shape)
-       (324, 274)
-       >>> # For large directories containing many standard files, use the prefix and/or suffix arguments to 
-       >>> # restrict the search and speedup things
-       >>> # in the following example, only files matching 2016081200*0001 will be searched.
-       >>> pr2 = fst_tools.get_data(dir_name=fst_dir, prefix='2016081200', suffix='0001', var_name='PR', datev=dt)
-       >>> print(pr2.keys())
-       dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1_list', 'lev_list'])
-       >>> print(pr2['values'].shape)
-       (324, 274)
-
-       The Yin-Yang grid can be represented in different ways in standard files. 
-       
-       Sometimes, both the Yin and Yang grids are combined and appear as single entries in 
-       standard files. 
-       In these cases, the *get_data* method will separate the Yin and Yang grids for you. 
-       In the following example, look for the "yin" and "yang" entries that appear in the output 
-       dictionary. Each comes with its own values, meta data and lat/lon. 
-
-       For convenience, the "regular" values, meta data and lat/lon are set to those of the Yin grid. 
-       
-       >>> import domcmc.fst_tools as fst_tools
-       >>> import datetime
-       >>> fst_file = '/home/dja001/shared_stuff/files/test_data_for_domcmc/2016122900_yinyang_example.fst'
-       >>> dt = datetime.datetime(2016, 12, 29, 0, 0, 0, tzinfo=datetime.timezone.utc)
-       >>> pr = fst_tools.get_data(file_name=fst_file, var_name='PR', datev=dt, latlon=True)
-       >>> # Note the yin and yang entries in this dictionary
-       >>> # "values", "lat" and "lon" are those of the Yin grid
-       >>> print(pr.keys())
-       dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1_list', 'lev_list', 'yin', 'yang', 'lat', 'lon'])
-       >>> #data on the Yin grid
-       >>> print(pr['yin'].keys())
-       dict_keys(['meta', 'toctoc', 'ip1_list', 'lev_list', 'grid', 'values', 'lat', 'lon'])
-       >>> #data on the Yang grid
-       >>> print(pr['yang'].keys())
-       dict_keys(['meta', 'toctoc', 'ip1_list', 'lev_list', 'grid', 'values', 'lat', 'lon'])
-
-
+    The examples that were here have been moved to an "Examples" section of the 
+    documentation where they should be easier to navigate.
 
     """
+
+
 
     import numpy as np
     import os
@@ -259,6 +122,18 @@ def get_data(file_name:     Optional[str]=None,
     #was varname specified
     if var_name is None :
         raise ValueError('var_name: must be set to a fst variable name eg P0, UU, TT, etc')
+
+    #varname = "wind_vectors is a special cases"
+    if var_name == 'wind_vectors':
+        #wind is read 
+        return read_and_rotate_winds(file_name = file_name, dir_name  = dir_name,     
+                                     prefix    = prefix, suffix       = suffix,       datev = datev,        
+                                     ip1       = ip1,    ip2          = ip2,          ip3   = ip3,          
+                                     ig1       = ig1,    ig2          = ig2,          ig3   = ig3,          
+                                     typvar    = typvar, etiquette    = etiquette,    
+                                     latlon    = latlon,pres_from_var = pres_from_var, pres_levels = pres_levels,  
+                                     tmp_dir   = tmp_dir)
+    
 
     #get cmc_timestamp from datev
     if datev is None :
@@ -385,7 +260,7 @@ def get_data(file_name:     Optional[str]=None,
             raise ValueError('P0 is necessary for vertical interpolation')
 
         var = _get_var(file_to_read, var_name,
-                       datev=p0['meta']['datev'],
+                       datev=cmc_timestamp,
                        ip1=None, ip2=None, ip3=None,
                        ig1=ig1,  ig2=ig2,  ig3=ig3,
                        typvar=typvar, etiquette=etiquette,
@@ -422,7 +297,7 @@ def get_data(file_name:     Optional[str]=None,
         else:
             #interpolate p0 to variable grid
             #   Not sure this is needed anymore.... 
-            raise RuntimeError('hinterp with P0 on a different grid not yet implemented')
+            raise RuntimeError('hinterp with P0 on a different grid not implemented')
 
         #Do the interpolation
         #make sure interpolation package is loaded
@@ -438,9 +313,25 @@ def get_data(file_name:     Optional[str]=None,
                            '-plevs', level_str,
                            '-var'  , var_str]
         try:
-            subprocess.run(cmd)
+            status = subprocess.call(cmd)
         except:
             raise RuntimeError('Something went wrong with pxs2pxt, often speficying a tmp_dir solves the problem')
+
+        #error on nonzero exit status
+        if status != 0:
+            raise rmn.FSTDError("Something went wrong with d.psx2pxt, read output and try to figure out what is wrong")
+
+        #write grid to interpolated file, may be needed for wind rotation
+        try:
+            iunit = rmn.fstopenall(interp_file,rmn.FST_RW)
+        except:
+            raise rmn.FSTDError("File not found/readable: %s" % interp_file)
+        try:
+            rmn.writeGrid(iunit, p0['grid'])
+        except:
+            raise RuntimeError('something went wrong writing grid to :'+interp_file)
+        finally:
+            rmn.fstcloseall(iunit)
 
         #cleanup
         os.remove(pxs_file)
@@ -522,12 +413,26 @@ def get_data(file_name:     Optional[str]=None,
 
             #temp copy of values
             yy_values = copy.deepcopy(var['values'])
-            nx, ny = yy_values.shape
-            half_ny = int(ny/2)
-            #yin values 
-            var['yin']['values']  = copy.deepcopy(yy_values[:,:half_ny])
-            #yang values 
-            var['yang']['values'] = copy.deepcopy(yy_values[:,half_ny:])
+
+            if yy_values.ndim == 2:
+                #2D field
+                nx, ny = yy_values.shape
+                half_ny = int(ny/2)
+                #yin values 
+                var['yin']['values']  = copy.deepcopy(yy_values[:,:half_ny])
+                #yang values 
+                var['yang']['values'] = copy.deepcopy(yy_values[:,half_ny:])
+            elif yy_values.ndim == 3:
+                #3D field
+                nx, ny, nz = yy_values.shape
+                half_ny = int(ny/2)
+                #yin values 
+                var['yin']['values']  = copy.deepcopy(yy_values[:,:half_ny,:])
+                #yang values 
+                var['yang']['values'] = copy.deepcopy(yy_values[:,half_ny:,:])
+            else:
+                raise ValueError('values should be 2D or 3D')
+
             #values in var is a link to yin values
             var['values'] = var['yin']['values']
 
@@ -554,6 +459,256 @@ def get_data(file_name:     Optional[str]=None,
 #end of get_data
 
 
+def read_and_rotate_winds(file_name:     Optional[str]=None,
+                          dir_name:      Optional[str]=None,
+                          prefix:        Optional[str]='',
+                          suffix:        Optional[str]='',
+                          datev:         Optional[Union[int,datetime.datetime]]=None,
+                          ip1:           Optional[Union[List[int],int]]=None,
+                          ip2:           Optional[int]=None,
+                          ip3:           Optional[int]=None,
+                          ig1:           Optional[int]=None,
+                          ig2:           Optional[int]=None,
+                          ig3:           Optional[int]=None,
+                          typvar:        Optional[str]=None,
+                          etiquette:     Optional[str]=None,
+                          latlon:        Optional[bool]=False,
+                          pres_from_var: Optional[bool]=False,
+                          pres_levels:   Optional[Iterable[int]]=None,
+                          tmp_dir:       Optional[str]=None) :
+    """Read winds from standard files and rotate them to get the W-E S-N components
+
+    This method behaves just like get_data.
+
+    Wind components along the grid UU and VV are read given the provided search criteria.
+
+    The wind vectors are then rotated to get the zonal and meridional wind components.
+
+    Returns:
+        {
+            'uu':   (ndarray) U-component of the wind along the model grid in Knots
+
+            'vv':   (ndarray) V-component of the wind along the model grid in Knots
+
+            'uuwe': (ndarray) U-component of the wind along the West-East direction in meters per seconds (m/s)
+
+            'vvsn': (ndarray) V-component of the wind along the South-North direction in meters per seconds (m/s)
+
+            'uv':   (ndarray) modulus of the wind vector in knots
+
+            'wd':   (ndarray) wind direction (degrees, meteorological convention)
+
+            'meta':     (dict) meta data of the first matching entry in fst file
+
+            'grid':     (dict) hgrid as returned by readGrid of rpn python
+
+            'toctoc':   (dict) toctoc (!!) entry associated with data as returned by fstlir of rpn python
+
+            'ip1_list': (list) ip1s for each level being returned
+
+            'lev_list': (list) levels corresponding to the ip1s in ip1_list
+
+            'lat':      (ndarray) 2D latitudes of data grid (conditional on latlon=True)
+
+            'lon':      (ndarray) 2D longitudes of data grid (conditional on latlon=True)
+
+            'pressure': (ndarray) 2D or 3D array of pressure (conditional on pres_levels)
+
+            'yin':      -- only for Yin-Yang grids -- contains all of the above for Yin grid If present, the four wind components, 'lat', 'lon' and 'pressure' entries of the output dictionary are from the Yin grid.
+            
+            'yang':     -- only for Yin-Yang grids -- contains all of the above for Yang grid
+
+        }
+
+    """
+
+    import copy
+    import warnings
+
+    #get UU
+    uu_dict = get_data(var_name = 'UU', file_name   = file_name,    dir_name = dir_name,     
+                       prefix   = prefix, suffix    = suffix,       datev    = datev,        
+                       ip1      = ip1,    ip2       = ip2,          ip3      = ip3,          
+                       ig1      = ig1,    ig2       = ig2,          ig3      = ig3,          
+                       typvar   = typvar, etiquette = etiquette,    
+                       latlon   = True, pres_from_var = pres_from_var, pres_levels = pres_levels,  
+                       tmp_dir  = tmp_dir)
+
+    #get VV
+    vv_dict = get_data(var_name = 'VV', file_name   = file_name,    dir_name = dir_name,     
+                       prefix   = prefix, suffix    = suffix,       datev    = datev,        
+                       ip1      = ip1,    ip2       = ip2,          ip3      = ip3,          
+                       ig1      = ig1,    ig2       = ig2,          ig3      = ig3,          
+                       typvar   = typvar, etiquette = etiquette,    
+                       latlon   = True, pres_from_var = pres_from_var, pres_levels = pres_levels,  
+                       tmp_dir  = tmp_dir)
+
+    if uu_dict is None or vv_dict is None:
+        warnings.warn('Found no matching entries for UU or VV')
+        return None
+
+    #convert UU-VV to UUWE-VVSN
+    if 'yin' in uu_dict.keys():
+
+        #prepare output dict based on what we got from UU
+        output_dict = copy.deepcopy(uu_dict)
+        del output_dict['values']
+
+        #Yin-Yang grid iterate over the two lams
+        for yy in ['yin','yang']:
+            this_UU  = uu_dict[yy]['values']
+            this_VV  = vv_dict[yy]['values']
+            this_lat = uu_dict[yy]['lat'] 
+            this_lon = uu_dict[yy]['lon'] 
+            grid     = uu_dict[yy]['grid'] 
+    
+            uuwe, vvsn, uv, wd = uu_vv_to_uuwe_vvsn(this_UU , this_VV ,
+                                                    this_lat, this_lon,
+                                                    grid)
+
+            #remove 'values' entry in dict
+            del output_dict[yy]['values']
+            #add the 6 wind entries
+            output_dict[yy]['uu']   = uu_dict['values']
+            output_dict[yy]['vv']   = vv_dict['values']
+            output_dict[yy]['uuwe'] = uuwe
+            output_dict[yy]['vvsn'] = vvsn
+            output_dict[yy]['uv']   = uv
+            output_dict[yy]['wd']   = wd
+
+        #wind components at the first level of dict are those of the yin grid
+        output_dict['uu']   = output_dict['yin']['uu']  
+        output_dict['vv']   = output_dict['yin']['vv']  
+        output_dict['uuwe'] = output_dict['yin']['uuwe']
+        output_dict['vvsn'] = output_dict['yin']['vvsn']
+        output_dict['uv']   = output_dict['yin']['uv']  
+        output_dict['wd']   = output_dict['yin']['wd']  
+
+
+    else:
+        #"regular" grid (ie not yin-yang)
+        this_UU  = uu_dict['values']
+        this_VV  = vv_dict['values']
+        this_lat = uu_dict['lat'] 
+        if this_lat.shape != vv_dict['lat'].shape:
+            raise ValueError('latitudes of uu and vv must be of the same shape')
+        this_lon = uu_dict['lon']
+        if this_lon.shape != vv_dict['lon'].shape:
+            raise ValueError('longitudes of uu and vv must be of the same shape')
+        grid = uu_dict['grid']
+    
+        uuwe, vvsn, uv, wd = uu_vv_to_uuwe_vvsn(this_UU , this_VV ,
+                                                this_lat, this_lon,
+                                                grid)
+
+        #construct output dictionary  based on uu_dict
+        output_dict = copy.deepcopy(uu_dict)
+        #remove 'values' entry in dict
+        del output_dict['values']
+        #add the 6 wind entries
+        output_dict['uu']   = uu_dict['values']
+        output_dict['vv']   = vv_dict['values']
+        output_dict['uuwe'] = uuwe
+        output_dict['vvsn'] = vvsn
+        output_dict['uv']   = uv
+        output_dict['wd']   = wd
+
+
+    return output_dict
+
+
+def uu_vv_to_uuwe_vvsn(UU, VV,
+                       lats, lons,
+                       grid):
+
+    """Get zonal and meridional winds from winds along the model grid
+
+    To respect dictionary definitions and confuse 
+    people,  
+        - UU and VV ans UV are in knots
+        - UUWE and VVSN are in meters per seconds
+
+    Args:
+       UU  :     (ndarray) U-component of the wind along the model grid
+       VV  :     (ndarray) V-component of the wind along the model grid
+       lats:     (ndarray) 2D latitudes  of the model grid
+       lons:     (ndarray) 2D longitudes of the model grid
+       grid:     (dict)    dictionary for the grid are read by rmn.readGrid
+
+    Returns:
+       uu   : (ndarray) U-component of the wind along the model grid
+       vv   : (ndarray) V-component of the wind along the model grid
+       uuwe : (ndarray) U-component of the wind along the West-East direction in meters per seconds (m/s)
+       vvsn : (ndarray) V-component of the wind along the South-North direction in meters per seconds (m/s)
+    """
+
+    import ctypes 
+    import numpy as np
+    from rpnpy.librmn import proto as _rp
+
+    #make sure uu and vv have the same dimension
+    if UU.shape != VV.shape:
+        raise ValueError('UU and VV must have the same shape')
+
+    if lats.shape != lons.shape:
+        raise ValueError('lats and lons must have the same shape')
+
+    if UU.ndim == 1 or UU.ndim == 2 :
+        #1D or 2D UU
+        if UU.shape != lats.shape:
+            raise ValueError('UU/VV and lats/lons must have the same shape')
+    elif UU.ndim == 3 :
+        #3D UU
+        if UU.shape[0:2] != lats.shape:
+            raise ValueError('UU/VV and lats/lons must have the same shape')
+    else:
+        raise ValueError('UU/VV should not have more than 3 dimensions')
+
+
+
+    #prepare inputs for c interface of fortran routines
+    dshape = lats.shape
+    uu0    = np.zeros(dshape, order='F', dtype=np.float32)
+    vv1    = np.ones( dshape, order='F', dtype=np.float32)
+    clat   = np.asfortranarray(lats,     dtype=np.float32)
+    clon   = np.asfortranarray(lons,     dtype=np.float32)
+    uv1    = np.empty(dshape, order='F', dtype=np.float32)
+    wd0    = np.empty(dshape, order='F', dtype=np.float32)
+
+    #rotation of the wind using rmn libraries
+    istat = _rp.c_gdwdfuv(grid['id'], uv1, wd0, uu0, vv1, clat, clon, clat.size)
+    if istat < 0:
+        raise rmn.EzscintError()
+
+    #by construction the met angle of input wind is aligned
+    #with the model grid
+    #the angle we get after the rotation tells us by how much we have 
+    #to rotate wind at each grid point to get WE-SN wind components
+    rot_angle = np.deg2rad(wd0 + 180.)    #+180 because we need arrow to point in wind direction for wind vectors
+
+    #the same rotation is applied to all points in a column
+    #if UU and VV are 3D, stack 2d rotation matrix to match
+    if UU.ndim == 3:
+        rot_angle = np.broadcast_to(rot_angle[...,np.newaxis], UU.shape)
+
+    #decompose UU and VV
+    modulus_kts      = np.sqrt(UU**2. + VV**2.) 
+    modulus_mps      = modulus_kts * 0.514444  #conversion from knots to m/s here
+    angle_before     = np.arctan2(UU, VV)
+
+    #apply rotation
+    angle_after = angle_before + rot_angle
+
+    #back to U-V representation this time along East-West South-North axes
+    uuwe = modulus_mps * np.sin(angle_after)
+    vvsn = modulus_mps * np.cos(angle_after)
+
+    #return values
+    uv = modulus_kts
+    #add 180 deg for direction where the wind is from
+    wd = np.mod(np.rad2deg(angle_after) + 180., 360.)
+
+    return uuwe, vvsn, uv, wd
 
 
 
@@ -562,7 +717,8 @@ def _get_var(file_name, var_name,
              ip1=None, ip2=None, ip3=None,
              ig1=None, ig2=None, ig3=None,
              typvar=None, etiquette=None,
-             meta_only=False, verbose=0, skip_non_fst=False) :
+             meta_only=False, shape_only=None, 
+             verbose=0, skip_non_fst=False) :
     """
     get variable in fst file
 
@@ -738,13 +894,19 @@ def _get_var(file_name, var_name,
             warnings.warn('Found more than one entry in fst file with same meta; this may or may not be bad... ; adjusting nz')
             nz = len(rev_inds)
 
+        #shape of final array
+        shape =  (ref_meta['shape'][0],ref_meta['shape'][1],nz)
+        if shape_only is not None:
+            # Close file
+            rmn.fstcloseall(iunit)
+            return {'shape':shape}
+
         #sorted arrays
         key_arr = key_arr[rev_inds]
         ip1_arr = ip1_arr[rev_inds]
         lev_arr = lev_arr[rev_inds]
 
         #read output
-        shape =  (ref_meta['shape'][0],ref_meta['shape'][1],nz)
         values = np.zeros(shape, order='F', dtype='float32')
         for kk in range(nz):
             dum = rmn.fstluk(key_arr[kk].item())

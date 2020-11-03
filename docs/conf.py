@@ -36,7 +36,8 @@ release = version
 #extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon']
 extensions = ['sphinx.ext.napoleon',
               'sphinx.ext.doctest', 
-              'sphinx_autodoc_typehints']
+              'sphinx_autodoc_typehints',
+              'sphinx_gallery.gen_gallery']
 
 napoleon_include_private_with_doc = False
 
