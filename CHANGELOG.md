@@ -8,6 +8,15 @@ Please use the following tags when editing this file:
 *Removed* for now removed features.
 *Fixed* for any bug fixes. 
 
+## [2.0.10] - 2020-11-13
+### Added
+- now able to get zonal and meridional wind from UU and VV
+- A new illustrated example that also acts as validation of the wind rotation
+### Changed
+- examples now separated from the code for easier navigation in the documentation
+### Fixed
+- bug preventing 3D outputs on the Yin-Yang grid
+
 ## [2.0.9] - 2020-10-23
 ### Fixed
 - pressure interpolation now functionnal with automatic file finding in a directory for a given date

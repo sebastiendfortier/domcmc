@@ -87,6 +87,16 @@ Source code
 Can be found 
 at: https://gitlab.science.gc.ca/dja001/domcmc
 
+.. toctree::
+   :caption: Examples
+
+   examples
+
+.. toctree::
+   :caption: Gallery
+
+   auto_examples/index
+
 
 .. toctree::
    :caption: Contribute
