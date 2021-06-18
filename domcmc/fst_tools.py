@@ -887,7 +887,7 @@ def _get_var(file_name, var_name,
         #sorted unique indices
         dum, inds = np.unique(lev_arr, return_index=True)
         #reverse order      hyb=1. is the lowest level
-        rev_inds = np.flip(inds)
+        rev_inds = np.flip(inds, axis=0)
 
         #raise error if there are non-unique levels represented
         if ip1_arr.shape != rev_inds.shape:
