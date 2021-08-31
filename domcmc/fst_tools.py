@@ -203,6 +203,11 @@ def get_data(file_name:     Optional[str]=None,
                                    meta_only=True, verbose=0,
                                    skip_non_fst=True)
                     if var is not None :
+                        #make sure date is the one we want, otherwise continue searching
+                        # fstinfx will erroneously return matching values when datestamps differ by less than one minute, hrrrr....
+                        if var['meta']['datev'] != cmc_timestamp:
+                            warnings.warn(f"Skipping entry returned at wrong date, we received {var['meta']['datev']} but asked for{cmc_timestamp}")
+                            continue
                         #this file contains all necessary data
                         found_file = this_file
 
@@ -887,7 +892,7 @@ def _get_var(file_name, var_name,
         #sorted unique indices
         dum, inds = np.unique(lev_arr, return_index=True)
         #reverse order      hyb=1. is the lowest level
-        rev_inds = np.flip(inds)
+        rev_inds = np.flip(inds, axis=0)
 
         #raise error if there are non-unique levels represented
         if ip1_arr.shape != rev_inds.shape:
@@ -943,10 +948,28 @@ def _my_fstinf(iunit, datev=None, etiket=None,
     if typvar       is None : typvar=' '
     if etiket       is None : etiket=' '
 
-    key_dict = rmn.fstinf(iunit, datev=datev, etiket=etiket,
+    #version to use if there were no bug in rpnpy/rmnlib
+    #key_dict = rmn.fstinf(iunit, datev=datev, etiket=etiket,
+    #                      ip1=ip1, ip2=ip2, ip3=ip3,
+    #                      typvar=typvar, nomvar=nomvar)
+
+
+    #here we search for the good datev ourselves
+    key_dict = rmn.fstinf(iunit, etiket=etiket,
                           ip1=ip1, ip2=ip2, ip3=ip3,
                           typvar=typvar, nomvar=nomvar)
-
+    if (key_dict is not None and datev > 0):
+        meta = rmn.fstprm(key_dict['key'])
+        if meta['datev'] != datev:
+            #enter here only if we have the wrong datev
+            while key_dict is not None:
+                meta = rmn.fstprm(key_dict['key'])
+                if meta['datev'] == datev:
+                    break
+                key_dict = rmn.fstinfx(key_dict, iunit, etiket=etiket,
+                                       ip1=ip1, ip2=ip2, ip3=ip3,
+                                       typvar=typvar, nomvar=nomvar)
+    
     if (key_dict is not None) and ( (ig1 is not None) or (ig2 is not None) or (ig3 is not None) ) :
 
         #get meta
