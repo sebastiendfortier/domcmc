@@ -1,12 +1,15 @@
 
 Notes for me to remember steps involved in publishing this package
 
+Packages to install for a development environment where we can run the tests and build this package
+
+    conda install -c conda-forge doctest sphinx sphinx-autodoc-typehints sphinx-gallery sphinx_rtd_theme
+
 - On a separate issue branch
     make changes
     run tests
 
         cd docs
-        . ssmuse-sh -d eccc/cmd/cmdn/pxs2pxt/3.16.6/default
         make clean
         make doctest
         make html
@@ -29,6 +32,7 @@ python setup.py sdist bdist_wheel
 twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 
 - upload to official pypi repo
+    conda install -c conda-forge twine     
 twine upload dist/*
 
 For CONDA package
@@ -36,7 +40,7 @@ For CONDA package
 - from the root of the repo
     To load in environment if not already done:
     conda install anaconda-client conda-build
-conda build conda_build/domcmc
+conda build --py 3.7 --py 3.8 --py 3.9 conda_build/domcmc
 
 Test the built package in a new environment:
 

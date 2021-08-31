@@ -73,7 +73,7 @@ Then, in your Python scripts:
   .. code-block:: python
 
      import domcmc.fst_tools as fst_tools
-     p0 = fst_tools.get_data(fileName='/fst/file/to/read.fst', var_name='P0')
+     p0 = fst_tools.get_data(file_name='/fst/file/to/read.fst', var_name='P0')
 
 .. toctree::
    :caption: fst_tools
