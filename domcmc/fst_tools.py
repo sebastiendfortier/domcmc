@@ -26,6 +26,7 @@ def get_data(file_name:     Optional[str]=None,
              latlon:        Optional[bool]=False,
              pres_from_var: Optional[bool]=False,
              pres_levels:   Optional[Iterable[int]]=None,
+             v_interp_type: Optional[str]=None,
              tmp_dir:       Optional[str]=None) :
 
 
@@ -69,6 +70,8 @@ def get_data(file_name:     Optional[str]=None,
        etiquette:     Criterion for choosing what data will be read
        latlon:        Flag to output 2D grids of latitude and longitudes associated with data
        pres_levels:   List of pressure levels [hPa] onto which data is desired   eg [850,700,500]
+       v_interp_type: Type of vertical interpolation, default is "CUB_" must be one of:
+                      "CUB_", "CUBP_", "LIN_", "NOI_" 
        tmp_dir:       /path/to/a/temporary/work/directory/   Only used for interpolation to pressure levels
                       if None, $TMPDIR is used; may run out of space when large fields are interpolated
 
@@ -163,7 +166,7 @@ def get_data(file_name:     Optional[str]=None,
             #iterate over files in dir_name and check which one match the search criterion
             #non FST files are skipped
             if not os.path.isdir(dir_name) :
-                raise ValueError('dir_name: ' + file_name + ' is not a valid path')
+                raise ValueError(f'{dir_name} is not a valid path')
             #get a list of files in there
             file_list = glob.glob(dir_name + '/' + prefix + '*' + suffix)
             if len(file_list) == 0 :
@@ -247,12 +250,21 @@ def get_data(file_name:     Optional[str]=None,
             level_str += '{:07.2f}'.format(thisLevel)+','
         level_str = level_str.rstrip(',')
 
-        #code for type of interpolation eg CUB_UU
-        #CUB_    CUBIC   
-        #CUBP_   CUBIC   Clip negative values
-        #LIN_    LINEAR  
-        #NOI_    NO INTERPOLATION    Use for surface or 2D  variables only 
-        var_str= 'CUB_' + var_name
+        if v_interp_type is None:
+            #default is cubic interpolation
+            v_interp_type = 'CUB_'
+        else:
+            #check code for type of interpolation 
+            # has to be one of:
+            #CUB_    CUBIC   
+            #CUBP_   CUBIC   Clip negative values
+            #LIN_    LINEAR  
+            #NOI_    NO INTERPOLATION    Use for surface or 2D  variables only 
+            avail_interp_types = ['CUB_', 'CUBP_', 'LIN_', 'NOI_' ]
+            if v_interp_type not in avail_interp_types :
+                raise ValueError(  f'Vertical interpolation can only be one of: {avail_interp_types}, \n'
+                                 + f'see https://wiki.cmc.ec.gc.ca/wiki/Pxs2pxt for details. ')
+        var_str= v_interp_type + var_name
 
 
         #get info on P0 and desired variable
