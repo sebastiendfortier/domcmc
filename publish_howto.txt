@@ -3,7 +3,13 @@ Notes for me to remember steps involved in publishing this package
 
 Packages to install for a development environment where we can run the tests and build this package
 
-    conda install -c conda-forge doctest sphinx sphinx-autodoc-typehints sphinx-gallery sphinx_rtd_theme
+    conda install -c conda-forge doctest sphinx sphinx-autodoc-typehints sphinx-gallery sphinx_rtd_theme scipy cartopy twine
+
+    comment the "install_requires" in setup.py
+    pip install /path/to/domcmc --editable  
+
+    comment the "install_requires" in setup.py
+    pip install /path/to/domutils --editable  
 
 - On a separate issue branch
     make changes
@@ -32,7 +38,6 @@ python setup.py sdist bdist_wheel
 twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 
 - upload to official pypi repo
-    conda install -c conda-forge twine     
 twine upload dist/*
 
 For CONDA package
@@ -40,7 +45,7 @@ For CONDA package
 - from the root of the repo
     To load in environment if not already done:
     conda install anaconda-client conda-build
-conda build --py 3.7 --py 3.8 --py 3.9 conda_build/domcmc
+conda build --py 3.7 --py 3.8 --py 3.9 --py 3.10 conda_build/domcmc
 
 Test the built package in a new environment:
 

@@ -45,7 +45,7 @@ vercomp () {
 #MAIN code begins here
 
 #insure minimum version of atomic profile
-minimum_atomic_version=1.12.0
+minimum_atomic_version=1.17.0
 if [ "$(vercomp ${minimum_atomic_version} ${EC_ATOMIC_PROFILE_VERSION})" = '>' ]; then
 	echo "EC_ATOMIC_PROFILE_VERSION=${EC_ATOMIC_PROFILE_VERSION} but should be greater or equal to ${minimum_atomic_version}"
 	echo "Please use login profile greater of equal to /fs/ssm/eccc/mrd/ordenv/profile/${minimum_atomic_version}"
@@ -53,10 +53,10 @@ if [ "$(vercomp ${minimum_atomic_version} ${EC_ATOMIC_PROFILE_VERSION})" = '>' ]
 fi
 
 #SSMs commands to run
-cmds=('. ssmuse-sh -x comm/eccc/all/opt/intelcomp/intelpsxe-cluster-19.0.3.199' 
-      '. r.load.dot /fs/ssm/eccc/mrd/rpn/vgrid/6.6.0'
-      '. r.load.dot /fs/ssm/eccc/mrd/rpn/MIG/ENV/x/rpnpy/2.2.0-a6'
-      '. r.load.dot /fs/ssm/eccc/cmd/cmdn/pxs2pxt/3.16.6/default')
+cmds=( '. r.load.dot eccc/mrd/rpn/MIG/ENV/rpnpy/2.1-u2.4'
+       '. r.load.dot eccc/mrd/rpn/MIG/ENV/migdep/5.1-u2.2' 
+       '. r.load.dot eccc/cmd/cmda/libs/20220216/inteloneapi-2022.1.2'
+       '. r.load.dot /fs/ssm/eccc/cmd/cmdn/pxs2pxt/3.17.5/default')
 for cmd in "${cmds[@]}"; do
     echo 'Running:  '$cmd
     $cmd

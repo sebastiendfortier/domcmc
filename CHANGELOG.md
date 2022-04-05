@@ -8,14 +8,24 @@ Please use the following tags when editing this file:
 *Removed* for now removed features.
 *Fixed* for any bug fixes. 
 
+
+
+## [2.1.0] - 2021-08-31
+### Changed
+- Use 2.1 an greater for use on U2 (ppp5 and ppp6)
+### Added
+- Support for different vertical interpolation types
+- support for python 3.7-3.10
+
 ## [2.0.11] - 2021-08-31
+### Changed
+- last version that works on U1 (ppp3 and ppp4)
 ### Added
 - Conda install now supporting Python 3.8
 ### Changed
 - fst_tools now check date returned by rmnlib functions to prevent bug where entries 
   closer than 1 minute all get returned even in is it does not match with cmc_timestamp
 - New SSM packages are loaded to fix rpnpy bug with numpy >= 1.20
-
 
 ## [2.0.10] - 2020-11-13
 ### Added
