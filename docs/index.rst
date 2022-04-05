@@ -57,16 +57,16 @@ environment:
 
   .. code-block:: bash
 
-	 . ssmuse-sh -x comm/eccc/all/opt/intelcomp/intelpsxe-cluster-19.0.3.199
-	 . r.load.dot /fs/ssm/eccc/mrd/rpn/vgrid/6.4.5 
-	 . ssmuse-sh -d eccc/mrd/rpn/MIG/ENV/x/rpnpy/2.1-u1.rc9
+     . r.load.dot eccc/mrd/rpn/MIG/ENV/rpnpy/2.1-u2.4
+     . r.load.dot eccc/mrd/rpn/MIG/ENV/migdep/5.1-u2.2'
+     . r.load.dot eccc/cmd/cmda/libs/20220216/inteloneapi-2022.1.2
 
 For vertical interpolation on pressure levels, you will also 
 need:
 
   .. code-block:: bash
 
-     . ssmuse-sh -d eccc/cmd/cmdn/pxs2pxt/3.16.6/default
+     . r.load.dot /fs/ssm/eccc/cmd/cmdn/pxs2pxt/3.17.5/default
 
 Then, in your Python scripts:
 

@@ -32,7 +32,7 @@ import domutils.geo_tools as geo_tools
 def main():
 
     fst_file = '/home/dja001/shared_stuff/files/test_data_for_domcmc/2016070600_000_uu_vv_hrdps_grid_constant_wind.fst'
-    tmp_dir = '/space/hall3/sitestore/eccc/mrd/rpndat/dja001/tmpdir'
+    tmp_dir = '/space/hall5/sitestore/eccc/mrd/rpndat/dja001/tmpdir/'
 
     #var_name="wind_vectors" reads in UU and VV and rotates the vectors to get
     #wind in the West-East and South-North dirtection are outputted
