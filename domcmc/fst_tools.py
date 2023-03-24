@@ -434,6 +434,8 @@ def get_data(file_name:     Optional[str]=None,
             var['yin']['grid']  = copy.deepcopy(var['grid']['subgrid'][0])
             #yang grid 
             var['yang']['grid'] = copy.deepcopy(var['grid']['subgrid'][1])
+            # add combined YY grid descriptor to be able to write '^>' entries in fst files
+            var['combined_yy_grid'] = copy.deepcopy(var['grid'])
             #grid in var dict is a link to yin grid
             var['grid'] = var['yin']['grid']
 
@@ -526,7 +528,9 @@ def read_and_rotate_winds(file_name:     Optional[str]=None,
 
             'meta':     (dict) meta data of the first matching entry in fst file
 
-            'grid':     (dict) hgrid as returned by readGrid of rpn python
+            'grid':     (dict) hgrid as returned by readGrid of rpn python (Yin grid in case of YinYang)
+
+            'combined_yy_grid':  (dict) Combine grid descriptor for ^> entry. Only in case of YinYang.
 
             'toctoc':   (dict) toctoc (!!) entry associated with data as returned by fstlir of rpn python
 

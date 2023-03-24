@@ -240,7 +240,7 @@ For convenience, the "regular" values, meta data and lat/lon are set to those of
 >>>
 >>> # Note the yin and yang entries in this dictionary
 >>> print(pr.keys())
-dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1_list', 'lev_list', 'yin', 'yang', 'lat', 'lon'])
+dict_keys(['values', 'meta', 'grid', 'toctoc', 'ip1_list', 'lev_list', 'yin', 'yang', 'combined_yy_grid', 'lat', 'lon'])
 >>>
 >>> # the "values", "lat", "lon" and other entries are those of the Yin grid
 >>> print(id(pr['values']) == id(pr['yin']['values']))
@@ -315,7 +315,7 @@ The file is automatically found from a directory and a suffix.
 ...                                 pres_levels = [500], suffix='yygrid_uu_vv.fst')
 >>>
 >>> print(wind_500.keys())
-dict_keys(['meta', 'grid', 'toctoc', 'ip1_list', 'lev_list', 'yin', 'yang', 'lat', 'lon', 'uu', 'vv', 'uuwe', 'vvsn', 'uv', 'wd'])
+dict_keys(['meta', 'grid', 'toctoc', 'ip1_list', 'lev_list', 'yin', 'yang', 'combined_yy_grid', 'lat', 'lon', 'uu', 'vv', 'uuwe', 'vvsn', 'uv', 'wd'])
 >>> 
 >>> #wind on Yin grid
 >>> print(wind_500['yin'].keys())
