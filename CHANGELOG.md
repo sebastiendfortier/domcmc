@@ -9,8 +9,11 @@ Please use the following tags when editing this file:
 *Fixed* for any bug fixes. 
 
 
+## [2.1.1] - 2022-07-06
+### Changed
+- update dependencies for rpnpy
 
-## [2.1.0] - 2021-08-31
+## [2.1.0] - 2021-06-12
 ### Changed
 - Use 2.1 an greater for use on U2 (ppp5 and ppp6)
 ### Added

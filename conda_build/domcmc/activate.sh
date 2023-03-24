@@ -53,10 +53,8 @@ if [ "$(vercomp ${minimum_atomic_version} ${EC_ATOMIC_PROFILE_VERSION})" = '>' ]
 fi
 
 #SSMs commands to run
-cmds=( '. r.load.dot eccc/mrd/rpn/MIG/ENV/rpnpy/2.1-u2.4'
-       '. r.load.dot eccc/mrd/rpn/MIG/ENV/migdep/5.1-u2.2' 
-       '. r.load.dot eccc/cmd/cmda/libs/20220216/inteloneapi-2022.1.2'
-       '. r.load.dot /fs/ssm/eccc/cmd/cmdn/pxs2pxt/3.17.5/default')
+cmds=( '. r.load.dot eccc/mrd/rpn/MIG/ENV/rpnpy/2.1-u2.5  main/opt/intelcomp/inteloneapi-2022.1.2/intelcomp+mpi+mkl'
+       '. r.load.dot /fs/ssm/eccc/cmd/cmdn/pxs2pxt/5.0.0/default')
 for cmd in "${cmds[@]}"; do
     echo 'Running:  '$cmd
     $cmd
