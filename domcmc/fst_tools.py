@@ -165,12 +165,17 @@ def get_data(file_name:     Optional[str]=None,
         if dir_name is not None :
             #iterate over files in dir_name and check which one match the search criterion
             #non FST files are skipped
+
             if not os.path.isdir(dir_name) :
-                raise ValueError(f'{dir_name} is not a valid path')
+                warnings.warn(f'{dir_name} is not a valid path, returning None')
+                return None
+
             #get a list of files in there
             file_list = glob.glob(dir_name + '/' + prefix + '*' + suffix)
             if len(file_list) == 0 :
-                raise RuntimeError('no files in :' + dir_name + '/' + prefix + '*' + suffix)
+                warnings.warn('No files in :' + dir_name + '/' + prefix + '*' + suffix +' returning None')
+                return None
+
             file_to_read = None
             for this_file in file_list :
                 found_file = None
@@ -224,6 +229,10 @@ def get_data(file_name:     Optional[str]=None,
             #if no match found after iterating over all files, return None
             if file_to_read is None :
                 return None
+            else:
+                pass
+                #Usefull for debugging
+                #print(f'FILE: {file_to_read}')
     
         else :
             raise ValueError('Please provide one of file_name or dir_name arguments')
