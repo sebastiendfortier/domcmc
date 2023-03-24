@@ -56,15 +56,6 @@ conda create -n domcmc_test domcmc --use-local
     - Can test local build with:
     conda install -c file:///home/ords/mrd/rpndat/dja001/python_miniconda3/envs/test1/conda-bld/ domcmc --override-channels
 
-- Add to local conda channel:
-
-add the bz2 file to:
-/home/dja001/shared_stuff/conda_channel/linux-64/
-Go in 
-/home/dja001/shared_stuff/
-and run:
-conda index conda_channel/
-
 
 - test the conda package in a frest conda environment with:
 conda install domcmc -c /home/dja001/shared_stuff/conda_channel --override-channels
@@ -74,4 +65,5 @@ conda upgrade domcmc -c /home/dja001/shared_stuff/conda_channel --override-chann
 - push the docs
 rsync -auv --delete docs/_build/html/ /home/dja001/public_html/domcmc/
 
+- commit everything in branch, push branch on gitlab repo, merge into master
 
