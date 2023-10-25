@@ -8,6 +8,10 @@ Please use the following tags when editing this file:
 *Removed* for now removed features.
 *Fixed* for any bug fixes. 
 
+## [2.1.3] - 2023-10-25
+### Changed
+- New rpnpy dependencies, fixes bug preventing pressure computation with SLEEVE levels. 
+
 ## [2.1.2] - 2023-03-24
 ### Added
 - Added combined yin yang grid descriptors in output

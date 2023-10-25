@@ -126,6 +126,12 @@ def get_data(file_name:     Optional[str]=None,
     if var_name is None :
         raise ValueError('var_name: must be set to a fst variable name eg P0, UU, TT, etc')
 
+    #defaults if None
+    if prefix is None:
+        prefix = ''
+    if suffix is None:
+        suffix = ''
+
     #varname = "wind_vectors is a special cases"
     if var_name == 'wind_vectors':
         #wind is read 

@@ -45,7 +45,10 @@ For CONDA package
 - from the root of the repo
     To load in environment if not already done:
     conda install anaconda-client conda-build
-conda build --py 3.7 --py 3.8 --py 3.9 --py 3.10 conda_build/domcmc
+conda build conda_build/domcmc
+    edit 
+    conda_build/domcmc/conda_build_config.yaml
+    for more versions of python
 
 Test the built package in a new environment:
 

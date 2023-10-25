@@ -57,14 +57,18 @@ environment:
 
   .. code-block:: bash
 
-     . r.load.dot eccc/mrd/rpn/MIG/ENV/rpnpy/2.1-u2.5  main/opt/intelcomp/inteloneapi-2022.1.2/intelcomp+mpi+mkl
+    . r.load.dot eccc/mrd/rpn/MIG/ENV/x/rpnpy/2.2.0-rc2 \
+             eccc/mrd/rpn/code-tools/ENV/cdt-1.6.6/SCIENCE/inteloneapi-2022.1.2
+    . r.load.dot eccc/mrd/rpn/libs/20230906 \
+             eccc/cmd/cmda/libs/20230906/inteloneapi-2022.1.2
+ 
 
 For vertical interpolation on pressure levels, you will also 
 need:
 
   .. code-block:: bash
 
-     . r.load.dot /fs/ssm/eccc/cmd/cmdn/pxs2pxt/3.17.5/default
+     . r.load.dot /fs/ssm/eccc/cmd/cmdn/pxs2pxt/5.1.3/default
 
 Then, in your Python scripts:
 
